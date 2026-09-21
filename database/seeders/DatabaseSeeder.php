@@ -51,9 +51,11 @@ class DatabaseSeeder extends Seeder
         }
 
         $members = [
-            ['member_code' => 'M001', 'name' => 'Budi Santoso', 'email' => 'budi@mail.com', 'phone' => '0811', 'address' => 'Jakarta', 'status' => 'active'],
-            ['member_code' => 'M002', 'name' => 'Siti Aminah', 'email' => 'siti@mail.com', 'phone' => '0812', 'address' => 'Bandung', 'status' => 'active'],
-            ['member_code' => 'M003', 'name' => 'Andi Wijaya', 'email' => 'andi@mail.com', 'phone' => '0813', 'address' => 'Surabaya', 'status' => 'active'],
+            ['member_code' => 'M001', 'name' => 'Budi Santoso', 'email' => 'budi@mail.com', 'phone' => '0811', 'address' => 'Jakarta', 'status' => 'active', 'password' => Hash::make('password'), 'active_until' => now()->addYear()],
+            ['member_code' => 'M002', 'name' => 'Siti Aminah', 'email' => 'siti@mail.com', 'phone' => '0812', 'address' => 'Bandung', 'status' => 'active', 'password' => Hash::make('password'), 'active_until' => now()->addYear()],
+            ['member_code' => 'M003', 'name' => 'Andi Wijaya', 'email' => 'andi@mail.com', 'phone' => '0813', 'address' => 'Surabaya', 'status' => 'active', 'password' => Hash::make('password'), 'active_until' => now()->addYear()],
+            ['member_code' => 'LIB-000124', 'name' => 'Nonaktif Demo', 'email' => 'nonaktif@mail.com', 'phone' => '0814', 'address' => 'Medan', 'status' => 'inactive', 'password' => Hash::make('password'), 'active_until' => now()->addYear()],
+            ['member_code' => 'LIB-000125', 'name' => 'Kedaluwarsa Demo', 'email' => 'expired@mail.com', 'phone' => '0815', 'address' => 'Yogya', 'status' => 'active', 'password' => Hash::make('password'), 'active_until' => now()->subDay()],
         ];
         foreach ($members as $m) {
             Member::updateOrCreate(['member_code' => $m['member_code']], $m);

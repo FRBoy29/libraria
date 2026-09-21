@@ -24,22 +24,30 @@ class Manager extends Component
 
     public string $email = '';
 
+    public string $password = '';
+
     public string $phone = '';
 
     public string $address = '';
 
     public string $status = 'active';
 
+    public string $active_until = '';
+
     protected function rules(): array
     {
         $id = $this->editingId ?? 'NULL';
+        $passwordRule = $this->editingId ? 'nullable|min:6' : 'required|min:6';
+
         return [
             'member_code' => 'required|string|max:255|unique:members,member_code,' . $id . ',id',
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:members,email,' . $id . ',id',
+            'password' => $passwordRule,
             'phone' => 'nullable|string|max:50',
             'address' => 'nullable|string',
             'status' => 'required|in:active,inactive',
+            'active_until' => 'nullable|date',
         ];
     }
 
@@ -53,21 +61,36 @@ class Manager extends Component
         $this->resetPage();
     }
 
+    public function generateCode(): void
+    {
+        $n = (Member::max('id') ?? 0) + 1;
+        do {
+            $code = 'LIB-' . str_pad((string) $n, 6, '0', STR_PAD_LEFT);
+            $n++;
+        } while (Member::where('member_code', $code)->exists());
+
+        $this->member_code = $code;
+    }
+
     public function save()
     {
         $data = $this->validate();
         $data['phone'] = $this->phone ?: null;
         $data['address'] = $this->address ?: null;
+        $data['active_until'] = $this->active_until ?: null;
 
         if ($this->editingId) {
+            if ($this->password === '') {
+                unset($data['password']);
+            }
             Member::findOrFail($this->editingId)->update($data);
             session()->flash('success', 'Anggota diperbarui.');
         } else {
             Member::create($data);
-            session()->flash('success', 'Anggota ditambahkan.');
+            session()->flash('success', 'Anggota ditambahkan. Member ID: ' . $data['member_code']);
         }
 
-        $this->reset(['editingId', 'member_code', 'name', 'email', 'phone', 'address', 'status']);
+        $this->reset(['editingId', 'member_code', 'name', 'email', 'password', 'phone', 'address', 'status', 'active_until']);
         $this->status = 'active';
     }
 
@@ -78,14 +101,16 @@ class Manager extends Component
         $this->member_code = $m->member_code;
         $this->name = $m->name;
         $this->email = $m->email;
+        $this->password = '';
         $this->phone = $m->phone ?? '';
         $this->address = $m->address ?? '';
         $this->status = $m->status;
+        $this->active_until = $m->active_until ? $m->active_until->format('Y-m-d') : '';
     }
 
     public function cancel(): void
     {
-        $this->reset(['editingId', 'confirmingDelete', 'member_code', 'name', 'email', 'phone', 'address', 'status']);
+        $this->reset(['editingId', 'confirmingDelete', 'member_code', 'name', 'email', 'password', 'phone', 'address', 'status', 'active_until']);
         $this->status = 'active';
     }
 

@@ -1,28 +1,56 @@
 <?php
 
-use App\Livewire\Auth\Login;
+use App\Livewire\Admin\Auth\Login as AdminLogin;
+use App\Livewire\Auth\Login as LegacyLogin;
 use App\Livewire\Book\Manager as BookManager;
 use App\Livewire\Borrowing\Manager as BorrowingManager;
 use App\Livewire\Category\Manager as CategoryManager;
 use App\Livewire\Dashboard\Stats;
+use App\Livewire\Member\Auth\Login as MemberLogin;
+use App\Livewire\Member\BookDetail as MemberBookDetail;
+use App\Livewire\Member\Catalog as MemberCatalog;
+use App\Livewire\Member\Dashboard as MemberDashboard;
+use App\Livewire\Member\History as MemberHistory;
 use App\Livewire\Member\Manager as MemberManager;
+use App\Livewire\Member\MyBorrowings as MemberBorrowings;
+use App\Livewire\Member\Profile as MemberProfile;
 use App\Livewire\Report\Index as Reports;
 use App\Livewire\ReturnBook\Manager as ReturnsManager;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => redirect('/login'));
+Route::get('/', fn () => view('landing'));
 
-Route::get('/login', Login::class)->middleware('guest')->name('login');
-Route::post('/logout', function () {
-    Auth::logout();
+Route::get('/login', fn () => redirect('/admin/login'));
+
+Route::get('/admin/login', AdminLogin::class)->middleware('admin.guest')->name('admin.login');
+Route::post('/admin/logout', function () {
+    Auth::guard('web')->logout();
     session()->invalidate();
     session()->regenerateToken();
 
-    return redirect('/login');
-})->middleware('auth')->name('logout');
+    return redirect('/admin/login');
+})->middleware('admin.auth')->name('admin.logout');
 
-Route::middleware('auth')->prefix('admin')->group(function () {
+// Backward-compat lama: POST /logout untuk admin
+Route::post('/logout', function () {
+    Auth::guard('web')->logout();
+    session()->invalidate();
+    session()->regenerateToken();
+
+    return redirect('/admin/login');
+})->middleware('admin.auth');
+
+Route::get('/member/login', MemberLogin::class)->middleware('member.guest')->name('member.login');
+Route::post('/member/logout', function () {
+    Auth::guard('member')->logout();
+    session()->invalidate();
+    session()->regenerateToken();
+
+    return redirect('/member/login');
+})->middleware('member.auth')->name('member.logout');
+
+Route::middleware('admin.auth')->prefix('admin')->group(function () {
     Route::get('/dashboard', Stats::class);
     Route::get('/categories', CategoryManager::class);
     Route::get('/books', BookManager::class);
@@ -36,3 +64,15 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::get('/returns', ReturnsManager::class);
     Route::get('/reports', Reports::class);
 });
+
+Route::middleware('member.auth')->prefix('member')->group(function () {
+    Route::get('/dashboard', MemberDashboard::class);
+    Route::get('/books', MemberCatalog::class);
+    Route::get('/books/{id}', MemberBookDetail::class);
+    Route::get('/borrowings', MemberBorrowings::class);
+    Route::get('/history', MemberHistory::class);
+    Route::get('/profile', MemberProfile::class);
+});
+
+// Referensi lama yang tidak dipakai lagi (dipertahankan agar tidak 404 bila di-bookmark)
+Route::get('/legacy-login', LegacyLogin::class)->middleware('admin.guest');
