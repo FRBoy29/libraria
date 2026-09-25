@@ -28,6 +28,11 @@ class Manager extends Component
     {
         $this->borrowed_at = now()->format('Y-m-d');
         $this->due_at = now()->addDays(7)->format('Y-m-d');
+
+        $preselect = request('member');
+        if (is_string($preselect) && $preselect !== '' && Member::where('id', $preselect)->exists()) {
+            $this->member_id = $preselect;
+        }
     }
 
     public function save()

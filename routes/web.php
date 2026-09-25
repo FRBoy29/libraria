@@ -57,6 +57,24 @@ Route::middleware('admin.auth')->prefix('admin')->group(function () {
     Route::get('/books/create', BookManager::class);
     Route::get('/books/{id}/edit', BookManager::class);
     Route::get('/members', MemberManager::class);
+    Route::get('/members/export', function () {
+        $rows = \App\Models\Member::orderBy('id')->get([
+            'member_code', 'name', 'email', 'phone', 'address', 'status', 'active_until', 'created_at',
+        ]);
+        $name = 'anggota-libraria-' . now()->format('Ymd') . '.csv';
+
+        return response()->streamDownload(function () use ($rows) {
+            $out = fopen('php://output', 'w');
+            fputcsv($out, ['Member Code', 'Nama', 'Email', 'Telepon', 'Alamat', 'Status', 'Aktif Sampai', 'Terdaftar']);
+            foreach ($rows as $m) {
+                fputcsv($out, [
+                    $m->member_code, $m->name, $m->email, $m->phone, $m->address,
+                    $m->status, $m->active_until, $m->created_at,
+                ]);
+            }
+            fclose($out);
+        }, $name, ['Content-Type' => 'text/csv']);
+    });
     Route::get('/members/create', MemberManager::class);
     Route::get('/members/{id}/edit', MemberManager::class);
     Route::get('/borrowings', BorrowingManager::class);
