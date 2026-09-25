@@ -57,6 +57,8 @@
 </head>
 <body class="bg-canvas dark:bg-[#0B1326] font-inter text-[14px] text-[#111C2D] dark:text-[#DAE2FD] antialiased">
     @php($active = $active ?? 'dashboard')
+    @php($koleksiOpen = ! in_array($active, ['borrowings', 'returns']))
+    @php($sirkulasiOpen = ! in_array($active, ['books', 'categories']))
     @php($accountName = auth()->user()->name ?? 'Admin')
     @php($accountEmail = auth()->user()->email ?? '')
     <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black/40 z-40 lg:hidden"></div>
@@ -71,10 +73,11 @@
                     <span class="material-symbols-outlined text-[20px]">dashboard</span><span>Dashboard</span>
                 </a>
                 <div class="flex flex-col pt-1">
-                    <div class="flex items-center px-2.5 py-1.5 text-[#45464E] dark:text-[#9AA7C2] text-[12px] font-semibold uppercase tracking-wider">
-                        <span class="material-symbols-outlined text-[20px] mr-2.5">menu_book</span><span>Koleksi</span>
-                    </div>
-                    <div class="pl-8 flex flex-col gap-1">
+                    <button id="nav-koleksi-btn" type="button" data-open="{{ $koleksiOpen ? 'true' : 'false' }}" aria-expanded="{{ $koleksiOpen ? 'true' : 'false' }}" aria-controls="nav-koleksi-sub" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded text-[#45464E] dark:text-[#9AA7C2] text-[12px] font-semibold uppercase tracking-wider hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440]">
+                        <span class="flex items-center"><span class="material-symbols-outlined text-[20px] mr-2.5">menu_book</span><span>Koleksi</span></span>
+                        <span class="material-symbols-outlined text-[18px] nav-chevron" aria-hidden="true">expand_more</span>
+                    </button>
+                    <div id="nav-koleksi-sub" class="pl-8 flex-col gap-1" style="display: {{ $koleksiOpen ? 'flex' : 'none' }};">
                         <a href="/admin/books" class="px-2.5 py-1.5 rounded text-[13px] transition-colors {{ $active==='books' ? 'bg-[#5694FE]/15 text-secondary dark:text-[#9CC2FF] font-semibold' : 'text-[#45464E] dark:text-[#9AA7C2] hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440] hover:text-[#111C2D] dark:hover:text-white' }}">Semua Buku</a>
                         <a href="/admin/categories" class="px-2.5 py-1.5 rounded text-[13px] transition-colors {{ $active==='categories' ? 'bg-[#5694FE]/15 text-secondary dark:text-[#9CC2FF] font-semibold' : 'text-[#45464E] dark:text-[#9AA7C2] hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440] hover:text-[#111C2D] dark:hover:text-white' }}">Kategori</a>
                     </div>
@@ -83,10 +86,11 @@
                     <span class="material-symbols-outlined text-[20px]">group</span><span>Anggota</span>
                 </a>
                 <div class="flex flex-col pt-1">
-                    <div class="flex items-center px-2.5 py-1.5 text-[#45464E] dark:text-[#9AA7C2] text-[12px] font-semibold uppercase tracking-wider">
-                        <span class="material-symbols-outlined text-[20px] mr-2.5">sync_alt</span><span>Sirkulasi</span>
-                    </div>
-                    <div class="pl-8 flex flex-col gap-1">
+                    <button id="nav-sirkulasi-btn" type="button" data-open="{{ $sirkulasiOpen ? 'true' : 'false' }}" aria-expanded="{{ $sirkulasiOpen ? 'true' : 'false' }}" aria-controls="nav-sirkulasi-sub" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded text-[#45464E] dark:text-[#9AA7C2] text-[12px] font-semibold uppercase tracking-wider hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440]">
+                        <span class="flex items-center"><span class="material-symbols-outlined text-[20px] mr-2.5">sync_alt</span><span>Sirkulasi</span></span>
+                        <span class="material-symbols-outlined text-[18px] nav-chevron" aria-hidden="true">expand_more</span>
+                    </button>
+                    <div id="nav-sirkulasi-sub" class="pl-8 flex-col gap-1" style="display: {{ $sirkulasiOpen ? 'flex' : 'none' }};">
                         <a href="/admin/borrowings" class="px-2.5 py-1.5 rounded text-[13px] transition-colors {{ $active==='borrowings' ? 'bg-[#5694FE]/15 text-secondary dark:text-[#9CC2FF] font-semibold' : 'text-[#45464E] dark:text-[#9AA7C2] hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440] hover:text-[#111C2D] dark:hover:text-white' }}">Peminjaman</a>
                         <a href="/admin/returns" class="px-2.5 py-1.5 rounded text-[13px] transition-colors {{ $active==='returns' ? 'bg-[#5694FE]/15 text-secondary dark:text-[#9CC2FF] font-semibold' : 'text-[#45464E] dark:text-[#9AA7C2] hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440] hover:text-[#111C2D] dark:hover:text-white' }}">Pengembalian</a>
                     </div>
@@ -199,6 +203,31 @@
                 });
                 if (overlay) overlay.addEventListener('click', closeSidebar);
             }
+
+            /* Sidebar nav dropdowns (Koleksi & Sirkulasi) */
+            var navState = {};
+            try { navState = JSON.parse(localStorage.getItem('libraria-admin-nav') || '{}'); } catch (e) {}
+            function setupNav(btnId, subId, key) {
+                var btn = document.getElementById(btnId);
+                var sub = document.getElementById(subId);
+                if (!btn || !sub) return;
+                var open = (key in navState) ? !!navState[key] : (btn.getAttribute('data-open') === 'true');
+                function render() {
+                    sub.style.display = open ? 'flex' : 'none';
+                    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+                    var ch = btn.querySelector('.nav-chevron');
+                    if (ch) ch.style.transform = open ? 'rotate(180deg)' : 'none';
+                }
+                btn.addEventListener('click', function () {
+                    open = !open;
+                    navState[key] = open;
+                    try { localStorage.setItem('libraria-admin-nav', JSON.stringify(navState)); } catch (e) {}
+                    render();
+                });
+                render();
+            }
+            setupNav('nav-koleksi-btn', 'nav-koleksi-sub', 'koleksi');
+            setupNav('nav-sirkulasi-btn', 'nav-sirkulasi-sub', 'sirkulasi');
 
             /* Profile dropdown */
             var profileBtn = document.getElementById('profile-button');
