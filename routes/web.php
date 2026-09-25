@@ -19,7 +19,7 @@ use App\Livewire\ReturnBook\Manager as ReturnsManager;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => view('landing'));
+Route::get('/', fn () => view('landing.index'))->name('landing');
 
 Route::get('/login', fn () => redirect('/admin/login'));
 
