@@ -143,10 +143,10 @@
                             <div class="mt-1.5"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-brand/15 text-secondary dark:text-[#9CC2FF] border border-brand/20">Admin</span></div>
                         </div>
                         <div class="p-1.5 flex flex-col gap-0.5">
-                            <button type="button" data-account-modal class="flex items-center gap-3 px-3 py-2 rounded-lg text-left text-[#111C2D] dark:text-[#DAE2FD] hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440] transition-colors cursor-pointer">
+                            <a href="/admin/profile" class="flex items-center gap-3 px-3 py-2 rounded-lg text-left text-[#111C2D] dark:text-[#DAE2FD] hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440] transition-colors cursor-pointer">
                                 <span class="w-8 h-8 rounded-lg bg-brand/10 text-secondary flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-[18px]" aria-hidden="true">badge</span></span>
-                                <span class="flex flex-col"><span class="text-[14px] font-semibold leading-tight">Info Akun &amp; Profil</span><span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2] leading-tight">Lihat identitas akun</span></span>
-                            </button>
+                                <span class="flex flex-col"><span class="text-[14px] font-semibold leading-tight">Info Akun &amp; Profil</span><span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2] leading-tight">Ubah nama, email &amp; kata sandi</span></span>
+                            </a>
                             <button type="button" id="theme-row" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-left text-[#111C2D] dark:text-[#DAE2FD] hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440] transition-colors cursor-pointer">
                                 <span class="flex items-center gap-3">
                                     <span class="w-8 h-8 rounded-lg bg-gold/20 text-navy dark:text-gold flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-[18px] text-golddark dark:text-gold" aria-hidden="true">dark_mode</span></span>
@@ -178,32 +178,6 @@
             @endif
             {{ $slot }}
         </main>
-    </div>
-
-    <div id="account-modal-backdrop" hidden class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-[100]">
-        <div class="bg-white dark:bg-[#131B2E] border border-line dark:border-[#263252] rounded-2xl max-w-md w-full shadow-lg" role="dialog" aria-modal="true" aria-labelledby="account-modal-title">
-            <div class="flex items-center justify-between p-4 border-b border-line dark:border-[#263252]">
-                <h2 id="account-modal-title" class="font-poppins font-semibold text-[16px] text-navy dark:text-white">Info Akun</h2>
-                <button type="button" id="account-modal-close" class="w-9 h-9 rounded-lg bg-[#F0F3FF] dark:bg-[#1A2440] text-[#45464E] dark:text-[#9AA7C2] hover:text-[#111C2D] dark:hover:text-white" aria-label="Tutup dialog">&times;</button>
-            </div>
-            <div class="p-4 space-y-3 text-[14px]">
-                <div class="flex items-center gap-3">
-                    <span class="w-12 h-12 rounded-full bg-navy text-white flex items-center justify-center font-poppins font-bold text-[18px]" aria-hidden="true">{{ strtoupper(substr($accountName, 0, 1)) }}</span>
-                    <div>
-                        <div class="font-semibold text-primary dark:text-white">{{ $accountName }}</div>
-                        <div class="text-[12px] text-[#45464E] dark:text-[#9AA7C2]">{{ $accountEmail }}</div>
-                    </div>
-                </div>
-                <dl class="grid grid-cols-3 gap-2 text-[13px]">
-                    <div class="bg-[#F0F3FF] dark:bg-[#1A2440] rounded-lg p-2.5"><dt class="text-[11px] text-[#45464E] dark:text-[#9AA7C2]">Peran</dt><dd class="font-semibold text-primary dark:text-white">Admin</dd></div>
-                    <div class="bg-[#F0F3FF] dark:bg-[#1A2440] rounded-lg p-2.5"><dt class="text-[11px] text-[#45464E] dark:text-[#9AA7C2]">Akses</dt><dd class="font-semibold text-primary dark:text-white">Penuh</dd></div>
-                    <div class="bg-[#F0F3FF] dark:bg-[#1A2440] rounded-lg p-2.5"><dt class="text-[11px] text-[#45464E] dark:text-[#9AA7C2]">Status</dt><dd class="font-semibold text-success">Aktif</dd></div>
-                </dl>
-            </div>
-            <div class="p-4 border-t border-line dark:border-[#263252] text-right">
-                <button type="button" id="account-modal-ok" class="px-4 py-2 rounded-lg bg-navy dark:bg-brand text-white text-[14px] font-semibold">Tutup</button>
-            </div>
-        </div>
     </div>
 
     <script>
@@ -268,36 +242,8 @@
             renderTheme();
             if (themeRow) themeRow.addEventListener('click', function () { setTheme(!isDark()); });
 
-            /* Account modal */
-            var backdrop = document.getElementById('account-modal-backdrop');
-            var lastFocused = null;
-            function openAccountModal() {
-                if (!backdrop) return;
-                lastFocused = document.activeElement;
-                closeMenu();
-                backdrop.hidden = false;
-                var ok = document.getElementById('account-modal-ok');
-                if (ok) ok.focus();
-            }
-            function closeAccountModal() {
-                if (!backdrop || backdrop.hidden) return;
-                backdrop.hidden = true;
-                if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
-            }
-            window.closeAccountModal = closeAccountModal;
-            document.addEventListener('click', function (e) {
-                var opener = e.target.closest ? e.target.closest('[data-account-modal]') : null;
-                if (opener) { openAccountModal(); return; }
-                if (e.target === backdrop) closeAccountModal();
-            });
-            ['account-modal-close', 'account-modal-ok'].forEach(function (id) {
-                var b = document.getElementById(id);
-                if (b) b.addEventListener('click', closeAccountModal);
-            });
-
             document.addEventListener('keydown', function (e) {
                 if (e.key === 'Escape') {
-                    closeAccountModal();
                     if (menuOpen()) { closeMenu(); if (profileBtn) profileBtn.focus(); }
                     else closeSidebar();
                 }

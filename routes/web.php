@@ -63,6 +63,7 @@ Route::middleware('admin.auth')->prefix('admin')->group(function () {
     Route::get('/borrowings/create', BorrowingManager::class);
     Route::get('/returns', ReturnsManager::class);
     Route::get('/reports', Reports::class);
+    Route::get('/profile', \App\Livewire\Admin\Profile::class);
 });
 
 Route::middleware('member.auth')->prefix('member')->group(function () {
