@@ -101,6 +101,8 @@ a { color: inherit; }
 
 .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #22C55E; box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.18); }
 
+.status-link[data-open="false"] .status-dot { background: #F59E0B; box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.18); }
+
 .nav-btn {
     font-family: "Inter", sans-serif;
     font-weight: 500;
@@ -310,7 +312,8 @@ a { color: inherit; }
     .feature-grid { grid-template-columns: 1fr; }
     .stats { grid-template-columns: 1fr; max-width: 340px; }
     .status-link span.status-text { display: none; }
-    .status-link::after { content: "Buka"; font-size: 0.8rem; }
+    .status-link[data-open="true"]::after { content: "Buka"; font-size: 0.8rem; }
+    .status-link[data-open="false"]::after { content: "Tutup"; font-size: 0.8rem; }
     .dropdown-menu { position: fixed; left: 1rem; right: 1rem; width: auto; }
     .footer-inner { flex-direction: column; text-align: center; }
     .hero { padding: 3rem 0 2.5rem; }

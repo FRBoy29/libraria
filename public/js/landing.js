@@ -40,6 +40,27 @@
         });
     }
 
+    /* ---------- Service status follows device clock ---------- */
+    var statusLink = document.getElementById('service-status');
+
+    function updateServiceStatus(now) {
+        if (!statusLink) return;
+        var time = now instanceof Date ? now : new Date();
+        var mins = time.getHours() * 60 + time.getMinutes();
+        var open = mins >= 480 && mins < 1020; // 08:00–17:00 device time
+        statusLink.setAttribute('data-open', open ? 'true' : 'false');
+        var label = statusLink.querySelector('.status-text');
+        if (label) {
+            label.textContent = open
+                ? 'Layanan Buka 08:00 \u2013 17:00 WIB'
+                : 'Layanan Tutup \u2022 Buka 08:00 \u2013 17:00 WIB';
+        }
+        statusLink.setAttribute('aria-label', open ? 'Layanan buka' : 'Layanan tutup');
+    }
+
+    updateServiceStatus();
+    window.setInterval(updateServiceStatus, 60000);
+
     /* ---------- Login dropdown ---------- */
     var loginBtn = document.getElementById('login-button');
     var loginMenu = document.getElementById('login-menu');

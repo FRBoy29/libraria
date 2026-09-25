@@ -9,7 +9,7 @@
         </a>
         <span class="brand-tagline">More Than Books. A Brighter Tomorrow.</span>
         <span class="navbar-spacer"></span>
-        <a class="status-link" href="#layanan">
+        <a class="status-link" id="service-status" href="#layanan" data-open="true" aria-label="Status layanan perpustakaan">
             <span class="status-dot" aria-hidden="true"></span>
             <span class="status-text">Layanan Buka 08:00 – 17:00 WIB</span>
         </a>
