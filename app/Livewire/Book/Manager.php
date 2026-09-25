@@ -49,6 +49,14 @@ class Manager extends Component
         ];
     }
 
+    public function mount(): void
+    {
+        $q = request('q');
+        if (is_string($q) && $q !== '') {
+            $this->search = $q;
+        }
+    }
+
     public function updatedSearch(): void
     {
         $this->resetPage();
