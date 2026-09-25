@@ -48,16 +48,16 @@
             <!-- MOCK DATA: replace with database data later -->
             <div class="stats" role="list" aria-label="Statistik layanan">
                 <div class="stat" role="listitem">
-                    <div class="stat-value">3.420+</div>
-                    <div class="stat-label">Koleksi Judul</div>
+                    <span class="material-symbols-outlined stat-icon" aria-hidden="true">auto_stories</span>
+                    <span class="stat-text"><span class="stat-value">3.420+</span><span class="stat-label">Koleksi Judul</span></span>
                 </div>
                 <div class="stat" role="listitem">
-                    <div class="stat-value">1.280+</div>
-                    <div class="stat-label">Pemustaka</div>
+                    <span class="material-symbols-outlined stat-icon" aria-hidden="true">groups</span>
+                    <span class="stat-text"><span class="stat-value">1.280+</span><span class="stat-label">Pemustaka</span></span>
                 </div>
                 <div class="stat" role="listitem">
-                    <div class="stat-value">Real-Time</div>
-                    <div class="stat-label">Sirkulasi</div>
+                    <span class="material-symbols-outlined stat-icon" aria-hidden="true">sync_alt</span>
+                    <span class="stat-text"><span class="stat-value">Real-Time</span><span class="stat-label">Sirkulasi</span></span>
                 </div>
             </div>
         </div>

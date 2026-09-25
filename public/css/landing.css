@@ -226,9 +226,16 @@ a { color: inherit; }
     border-radius: 14px;
     padding: 1.1rem 0.75rem;
     box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
 }
-.stat-value { font-family: "Epilogue", sans-serif; font-weight: 700; font-size: 1.4rem; }
-.stat-label { color: var(--muted); font-size: 0.85rem; margin-top: 0.25rem; }
+.stat-icon { color: var(--blue); font-size: 30px; }
+.stat:nth-child(2) .stat-icon { color: var(--gold); }
+.stat-text { text-align: left; }
+.stat-value { display: block; font-family: "Epilogue", sans-serif; font-weight: 700; font-size: 1.4rem; }
+.stat-label { display: block; color: var(--muted); font-size: 0.85rem; margin-top: 0.25rem; }
 
 /* ---------- Features ---------- */
 .features { padding: 3rem 0 4rem; }
