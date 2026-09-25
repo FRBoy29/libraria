@@ -137,6 +137,7 @@
     function openModal(type) {
         var content = MODAL_CONTENT[type];
         if (!content || !backdrop) return;
+        closeMenu();
         lastFocused = document.activeElement;
         modalTitle.textContent = content.title;
         modalBody.innerHTML = content.body;
