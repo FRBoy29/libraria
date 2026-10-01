@@ -33,6 +33,11 @@ class Manager extends Component
         if (is_string($preselect) && $preselect !== '' && Member::where('id', $preselect)->exists()) {
             $this->member_id = $preselect;
         }
+
+        $prebook = request('book');
+        if (is_string($prebook) && $prebook !== '' && Book::where('id', $prebook)->exists()) {
+            $this->book_id = $prebook;
+        }
     }
 
     public function save()

@@ -54,6 +54,22 @@ Route::middleware('admin.auth')->prefix('admin')->group(function () {
     Route::get('/dashboard', Stats::class);
     Route::get('/categories', CategoryManager::class);
     Route::get('/books', BookManager::class);
+    Route::get('/books/export', function () {
+        $rows = \App\Models\Book::with('category')->orderBy('id')->get();
+        $name = 'katalog-buku-' . now()->format('Ymd') . '.csv';
+
+        return response()->streamDownload(function () use ($rows) {
+            $out = fopen('php://output', 'w');
+            fputcsv($out, ['ISBN', 'Judul', 'Penulis', 'Penerbit', 'Tahun', 'Kategori', 'Stok', 'Deskripsi']);
+            foreach ($rows as $b) {
+                fputcsv($out, [
+                    $b->isbn, $b->title, $b->author, $b->publisher, $b->publication_year,
+                    $b->category->name ?? '', $b->stock, $b->description,
+                ]);
+            }
+            fclose($out);
+        }, $name, ['Content-Type' => 'text/csv']);
+    });
     Route::get('/books/create', BookManager::class);
     Route::get('/books/{id}/edit', BookManager::class);
     Route::get('/members', MemberManager::class);

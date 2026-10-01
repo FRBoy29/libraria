@@ -3,21 +3,33 @@
 namespace App\Livewire\Book;
 
 use App\Models\Book;
+use App\Models\BorrowingDetail;
 use App\Models\Category;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 
 class Manager extends Component
 {
+    use WithFileUploads;
     use WithPagination;
 
     public string $search = '';
 
     public string $filterCategory = '';
 
+    public string $filterStatus = '';
+
+    public string $filterYear = '';
+
+    public string $view = 'table';
+
     public ?int $editingId = null;
 
     public ?int $confirmingDelete = null;
+
+    public bool $showDrawer = false;
 
     public string $isbn = '';
 
@@ -35,6 +47,8 @@ class Manager extends Component
 
     public string $description = '';
 
+    public $coverUpload = null;
+
     protected function rules(): array
     {
         return [
@@ -46,6 +60,7 @@ class Manager extends Component
             'category_id' => 'required|exists:categories,id',
             'stock' => 'required|integer|min:0',
             'description' => 'nullable|string',
+            'coverUpload' => 'nullable|image|max:3072',
         ];
     }
 
@@ -57,14 +72,26 @@ class Manager extends Component
         }
     }
 
-    public function updatedSearch(): void
+    public function updated($property): void
     {
-        $this->resetPage();
+        if ($property === 'coverUpload') {
+            return;
+        }
+        if (in_array($property, ['search', 'filterCategory', 'filterStatus', 'filterYear'], true)) {
+            $this->resetPage();
+        }
     }
 
-    public function updatedFilterCategory(): void
+    public function setView(string $view): void
     {
-        $this->resetPage();
+        $this->view = $view === 'grid' ? 'grid' : 'table';
+    }
+
+    public function openCreate(): void
+    {
+        $this->reset(['editingId', 'isbn', 'title', 'author', 'publisher', 'publication_year', 'category_id', 'description', 'coverUpload', 'confirmingDelete']);
+        $this->stock = 1;
+        $this->showDrawer = true;
     }
 
     public function save()
@@ -74,15 +101,24 @@ class Manager extends Component
         $data['publisher'] = $this->publisher ?: null;
         $data['description'] = $this->description ?: null;
 
-        if ($this->editingId) {
-            Book::findOrFail($this->editingId)->update($data);
+        $book = $this->editingId ? Book::findOrFail($this->editingId) : null;
+
+        if ($this->coverUpload) {
+            if ($book?->cover) {
+                Storage::disk('public')->delete($book->cover);
+            }
+            $data['cover'] = $this->coverUpload->store('covers', 'public');
+        }
+
+        if ($book) {
+            $book->update($data);
             session()->flash('success', 'Buku diperbarui.');
         } else {
             Book::create($data);
             session()->flash('success', 'Buku ditambahkan.');
         }
 
-        $this->reset(['editingId', 'isbn', 'title', 'author', 'publisher', 'publication_year', 'category_id', 'stock', 'description']);
+        $this->closeDrawer();
     }
 
     public function edit(int $id): void
@@ -97,30 +133,68 @@ class Manager extends Component
         $this->category_id = (string) $b->category_id;
         $this->stock = $b->stock;
         $this->description = $b->description ?? '';
+        $this->coverUpload = null;
+        $this->showDrawer = true;
     }
 
-    public function cancel(): void
+    public function closeDrawer(): void
     {
-        $this->reset(['editingId', 'confirmingDelete', 'isbn', 'title', 'author', 'publisher', 'publication_year', 'category_id', 'stock', 'description']);
+        $this->showDrawer = false;
+        $this->reset(['editingId', 'isbn', 'title', 'author', 'publisher', 'publication_year', 'category_id', 'stock', 'description', 'coverUpload', 'confirmingDelete']);
     }
 
     public function delete(int $id): void
     {
-        Book::findOrFail($id)->delete();
+        $book = Book::findOrFail($id);
+        if ($book->cover) {
+            Storage::disk('public')->delete($book->cover);
+        }
+        $book->delete();
         $this->confirmingDelete = null;
         session()->flash('success', 'Buku dihapus.');
     }
 
+    public function clearFilters(): void
+    {
+        $this->reset(['search', 'filterCategory', 'filterStatus', 'filterYear']);
+        $this->resetPage();
+    }
+
+    protected function filteredQuery()
+    {
+        return Book::with('category')
+            ->when($this->search, fn ($q) => $q->where(fn ($w) => $w->where('title', 'like', "%{$this->search}%")->orWhere('author', 'like', "%{$this->search}%")->orWhere('isbn', 'like', "%{$this->search}%")->orWhere('publisher', 'like', "%{$this->search}%")))
+            ->when($this->filterCategory, fn ($q) => $q->where('category_id', $this->filterCategory))
+            ->when($this->filterYear, fn ($q) => $q->where('publication_year', $this->filterYear))
+            ->when($this->filterStatus === 'empty', fn ($q) => $q->where('stock', '<=', 0))
+            ->when($this->filterStatus === 'available', fn ($q) => $q->where('stock', '>', 0));
+    }
+
     public function render()
     {
-        $books = Book::with('category')
-            ->when($this->search, fn ($q) => $q->where(fn ($w) => $w->where('title', 'like', "%{$this->search}%")->orWhere('author', 'like', "%{$this->search}%")->orWhere('isbn', 'like', "%{$this->search}%")))
-            ->when($this->filterCategory, fn ($q) => $q->where('category_id', $this->filterCategory))
-            ->orderBy('id', 'desc')->paginate(10);
+        $books = $this->filteredQuery()->orderBy('id', 'desc')->paginate(8);
+
+        $totalStock = (int) Book::sum('stock');
+        $borrowedQty = (int) BorrowingDetail::where('status', 'borrowed')->sum('quantity');
+        $totalCopies = $totalStock + $borrowedQty;
+        $availability = $totalCopies > 0 ? round($totalStock / $totalCopies * 100, 1) : 0.0;
+        $overdueBooks = (int) BorrowingDetail::where('status', 'borrowed')
+            ->whereHas('borrowing', fn ($b) => $b->where('due_at', '<', now()->toDateString()))->sum('quantity');
+
+        $categories = Category::withCount('books')->orderBy('name')->get();
 
         return view('livewire.book.manager', [
             'books' => $books,
-            'categories' => Category::orderBy('name')->get(),
-        ])->layout('layouts.app');
+            'categories' => $categories,
+            'years' => Book::whereNotNull('publication_year')->distinct()->orderByDesc('publication_year')->pluck('publication_year'),
+            'totalStock' => $totalStock,
+            'borrowedQty' => $borrowedQty,
+            'totalTitles' => Book::count(),
+            'overdueBooks' => $overdueBooks,
+            'availability' => $availability,
+        ])->layout('layouts.admin', [
+            'active' => 'books',
+            'overdueCount' => \App\Models\Borrowing::where('status', 'borrowed')->where('due_at', '<', now()->toDateString())->count(),
+        ]);
     }
 }
