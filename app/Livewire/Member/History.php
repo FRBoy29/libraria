@@ -21,6 +21,6 @@ class History extends Component
             ->orderBy('returned_at', 'desc')
             ->paginate(10);
 
-        return view('livewire.member.history', ['items' => $items])->layout('layouts.member');
+        return view('livewire.member.history', ['items' => $items])->layout('layouts.member', ['nav' => 'history']);
     }
 }

@@ -21,6 +21,6 @@ class MyBorrowings extends Component
             ->orderBy('due_at')
             ->paginate(10);
 
-        return view('livewire.member.my-borrowings', compact('borrowings'))->layout('layouts.member');
+        return view('livewire.member.my-borrowings', compact('borrowings'))->layout('layouts.member', ['nav' => 'borrowings']);
     }
 }

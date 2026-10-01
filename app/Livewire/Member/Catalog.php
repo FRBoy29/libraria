@@ -35,6 +35,6 @@ class Catalog extends Component
         return view('livewire.member.catalog', [
             'books' => $books,
             'categories' => Category::orderBy('name')->get(),
-        ])->layout('layouts.member');
+        ])->layout('layouts.member', ['nav' => 'books']);
     }
 }

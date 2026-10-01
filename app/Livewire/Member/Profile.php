@@ -69,6 +69,6 @@ class Profile extends Component
     {
         return view('livewire.member.profile', [
             'member' => Auth::guard('member')->user(),
-        ])->layout('layouts.member');
+        ])->layout('layouts.member', ['nav' => 'profile']);
     }
 }

@@ -16,6 +16,6 @@ class BookDetail extends Component
 
     public function render()
     {
-        return view('livewire.member.book-detail')->layout('layouts.member');
+        return view('livewire.member.book-detail')->layout('layouts.member', ['nav' => 'books']);
     }
 }
