@@ -11,6 +11,8 @@ class Login extends Component
 
     public string $password = '';
 
+    public bool $remember = true;
+
     public function login()
     {
         $credentials = $this->validate([
@@ -18,7 +20,7 @@ class Login extends Component
             'password' => 'required|min:6',
         ]);
 
-        if (! Auth::guard('web')->attempt($credentials)) {
+        if (! Auth::guard('web')->attempt($credentials, $this->remember)) {
             $this->addError('email', 'Email atau password salah.');
             return;
         }
