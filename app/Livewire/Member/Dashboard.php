@@ -49,6 +49,6 @@ class Dashboard extends Component
             'returnedDetails' => $returnedDetails,
             'availableBooks' => (int) $availableBooks,
             'totalTitles' => Book::count(),
-        ])->layout('layouts.member', ['nav' => 'dashboard']);
+        ])->layout('layouts.member', ['nav' => 'dashboard', 'overdueCount' => $overdue->count()]);
     }
 }

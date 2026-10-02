@@ -21,6 +21,9 @@ class MyBorrowings extends Component
             ->orderBy('due_at')
             ->paginate(10);
 
-        return view('livewire.member.my-borrowings', compact('borrowings'))->layout('layouts.member', ['nav' => 'borrowings']);
+        $today = now()->toDateString();
+        $overdue = Borrowing::where('member_id', $me)->where('status', 'borrowed')->whereDate('due_at', '<', $today)->count();
+
+        return view('livewire.member.my-borrowings', compact('borrowings'))->layout('layouts.member', ['nav' => 'borrowings', 'overdueCount' => $overdue]);
     }
 }

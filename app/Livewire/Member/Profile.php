@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Member;
 
+use App\Models\Borrowing;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
@@ -69,6 +70,14 @@ class Profile extends Component
     {
         return view('livewire.member.profile', [
             'member' => Auth::guard('member')->user(),
-        ])->layout('layouts.member', ['nav' => 'profile']);
+        ])->layout('layouts.member', ['nav' => 'profile', 'overdueCount' => $this->overdueCount()]);
+    }
+
+    private function overdueCount(): int
+    {
+        return Borrowing::where('member_id', Auth::guard('member')->id())
+            ->where('status', 'borrowed')
+            ->whereDate('due_at', '<', now()->toDateString())
+            ->count();
     }
 }

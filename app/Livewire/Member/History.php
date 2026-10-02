@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Member;
 
+use App\Models\Borrowing;
 use App\Models\BorrowingDetail;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -21,6 +22,14 @@ class History extends Component
             ->orderBy('returned_at', 'desc')
             ->paginate(10);
 
-        return view('livewire.member.history', ['items' => $items])->layout('layouts.member', ['nav' => 'history']);
+        return view('livewire.member.history', ['items' => $items])->layout('layouts.member', ['nav' => 'history', 'overdueCount' => $this->overdueCount()]);
+    }
+
+    private function overdueCount(): int
+    {
+        return Borrowing::where('member_id', Auth::guard('member')->id())
+            ->where('status', 'borrowed')
+            ->whereDate('due_at', '<', now()->toDateString())
+            ->count();
     }
 }
