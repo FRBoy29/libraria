@@ -17,6 +17,12 @@ class Catalog extends Component
 
     public string $filterCategory = '';
 
+    public bool $inStockOnly = false;
+
+    public string $sort = 'az';
+
+    public string $view = 'grid';
+
     public function mount(): void
     {
         $q = request('q');
@@ -25,26 +31,61 @@ class Catalog extends Component
         }
     }
 
-    public function updatedSearch(): void
+    public function updated($property): void
     {
+        if (in_array($property, ['search', 'filterCategory', 'inStockOnly', 'sort'], true)) {
+            $this->resetPage();
+        }
+    }
+
+    public function setView(string $view): void
+    {
+        $this->view = $view === 'table' ? 'table' : 'grid';
+    }
+
+    public function clearSearch(): void
+    {
+        $this->search = '';
         $this->resetPage();
     }
 
-    public function updatedFilterCategory(): void
+    public function clearFilters(): void
     {
+        $this->reset(['search', 'filterCategory', 'sort']);
+        $this->inStockOnly = false;
         $this->resetPage();
+    }
+
+    protected function baseQuery()
+    {
+        return Book::with(['category'])
+            ->withSum(['borrowingDetails as total_borrowed' => fn ($q) => $q], 'quantity')
+            ->when($this->search, fn ($q) => $q->where(fn ($w) => $w
+                ->where('title', 'like', "%{$this->search}%")
+                ->orWhere('author', 'like', "%{$this->search}%")
+                ->orWhere('publisher', 'like', "%{$this->search}%")
+                ->orWhere('isbn', 'like', "%{$this->search}%")))
+            ->when($this->filterCategory, fn ($q) => $q->where('category_id', $this->filterCategory))
+            ->when($this->inStockOnly, fn ($q) => $q->where('stock', '>', 0));
     }
 
     public function render()
     {
-        $books = Book::with('category')
-            ->when($this->search, fn ($q) => $q->where(fn ($w) => $w->where('title', 'like', "%{$this->search}%")->orWhere('author', 'like', "%{$this->search}%")))
-            ->when($this->filterCategory, fn ($q) => $q->where('category_id', $this->filterCategory))
-            ->orderBy('title')->paginate(12);
+        $query = match ($this->sort) {
+            'newest' => $this->baseQuery()->orderByDesc('id'),
+            'stock' => $this->baseQuery()->orderByDesc('stock'),
+            'popular' => $this->baseQuery()->orderByDesc('total_borrowed'),
+            default => $this->baseQuery()->orderBy('title'),
+        };
+
+        $books = $query->paginate(8);
+        $categories = Category::withCount('books')->orderBy('name')->get();
 
         return view('livewire.member.catalog', [
             'books' => $books,
-            'categories' => Category::orderBy('name')->get(),
+            'categories' => $categories,
+            'availableTitles' => Book::where('stock', '>', 0)->count(),
+            'totalTitles' => Book::count(),
         ])->layout('layouts.member', ['nav' => 'books', 'overdueCount' => $this->overdueCount()]);
     }
 
