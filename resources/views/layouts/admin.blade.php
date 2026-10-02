@@ -136,7 +136,7 @@
                 </a>
                 <div class="h-6 w-px bg-line dark:bg-[#263252]"></div>
                 <div class="relative" id="profile-menu-wrap">
-                    <button id="profile-button" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="profile-menu" class="flex items-center gap-2.5 pl-1 pr-2 py-1 rounded-xl hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440] border border-transparent hover:border-line dark:hover:border-[#263252] transition-all cursor-pointer">
+                    <button id="profile-button" type="button" data-dd-toggle aria-haspopup="true" aria-expanded="false" aria-controls="profile-menu" class="flex items-center gap-2.5 pl-1 pr-2 py-1 rounded-xl hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440] border border-transparent hover:border-line dark:hover:border-[#263252] transition-all cursor-pointer">
                         @if($accountPhoto)
                             <img src="{{ asset('storage/' . $accountPhoto) }}" alt="Foto {{ $accountName }}" class="w-8 h-8 rounded-full object-cover">
                         @else
@@ -145,7 +145,7 @@
                         <span class="hidden md:block text-[13px] font-semibold text-primary dark:text-white leading-tight max-w-[140px] truncate">{{ $accountName }}</span>
                         <span class="material-symbols-outlined text-[18px] text-[#45464E] dark:text-[#9AA7C2]" aria-hidden="true">expand_more</span>
                     </button>
-                    <div id="profile-menu" hidden class="absolute right-0 top-full mt-2 w-72 rounded-xl bg-white dark:bg-[#131B2E] border border-line dark:border-[#263252] shadow-lg z-50 overflow-hidden divide-y divide-line dark:divide-[#263252]">
+                    <div id="profile-menu" data-dd-menu aria-labelledby="profile-button" hidden class="absolute right-0 top-full mt-2 w-72 rounded-xl bg-white dark:bg-[#131B2E] border border-line dark:border-[#263252] shadow-lg z-50 overflow-hidden divide-y divide-line dark:divide-[#263252]">
                         <div class="p-4 bg-[#F0F3FF]/40 dark:bg-[#1A2440]/40 flex items-center gap-3">
                             @if($accountPhoto)
                                 <img src="{{ asset('storage/' . $accountPhoto) }}" alt="Foto {{ $accountName }}" class="w-10 h-10 rounded-full object-cover flex-shrink-0">
@@ -241,30 +241,38 @@
             setupNav('nav-koleksi-btn', 'nav-koleksi-sub', 'koleksi');
             setupNav('nav-sirkulasi-btn', 'nav-sirkulasi-sub', 'sirkulasi');
 
-            /* Profile dropdown */
-            var profileBtn = document.getElementById('profile-button');
-            var profileMenu = document.getElementById('profile-menu');
-            function menuOpen() { return !!profileMenu && profileMenu.hidden === false; }
-            function openMenu() {
-                if (!profileMenu || !profileBtn) return;
-                profileMenu.hidden = false;
-                profileBtn.setAttribute('aria-expanded', 'true');
-            }
-            function closeMenu() {
-                if (!profileMenu || !profileBtn) return;
-                profileMenu.hidden = true;
-                profileBtn.setAttribute('aria-expanded', 'false');
-            }
-            if (profileBtn && profileMenu) {
-                profileBtn.addEventListener('click', function (e) {
-                    e.stopPropagation();
-                    if (menuOpen()) closeMenu();
-                    else openMenu();
-                });
+            /* Dropdown akun (delegasi global, terdaftar satu kali) */
+            window.__librariaDropdown = window.__librariaDropdown || (function () {
+                function closeAll() {
+                    document.querySelectorAll('[data-dd-menu]').forEach(function (menu) {
+                        if (menu.hidden) return;
+                        menu.hidden = true;
+                        var b = document.getElementById(menu.getAttribute('aria-labelledby') || '');
+                        if (b) b.setAttribute('aria-expanded', 'false');
+                    });
+                }
                 document.addEventListener('click', function (e) {
-                    if (menuOpen() && !profileMenu.contains(e.target) && !profileBtn.contains(e.target)) closeMenu();
+                    var toggle = e.target.closest ? e.target.closest('[data-dd-toggle]') : null;
+                    var menu = toggle ? document.getElementById(toggle.getAttribute('aria-controls')) : null;
+                    var wasOpen = !!(menu && !menu.hidden);
+                    closeAll();
+                    if (!toggle || wasOpen) return;
+                    e.preventDefault();
+                    if (menu) {
+                        menu.hidden = false;
+                        toggle.setAttribute('aria-expanded', 'true');
+                    }
                 });
-            }
+                document.addEventListener('keydown', function (e) {
+                    if (e.key !== 'Escape') return;
+                    var openMenu = document.querySelector('[data-dd-menu]:not([hidden])');
+                    if (!openMenu) { closeSidebar(); return; }
+                    closeAll();
+                    var b = document.getElementById(openMenu.getAttribute('aria-labelledby') || '');
+                    if (b) b.focus();
+                });
+                return true;
+            })();
 
             /* Theme */
             var themeRow = document.getElementById('theme-row');
@@ -282,13 +290,6 @@
             }
             renderTheme();
             if (themeRow) themeRow.addEventListener('click', function () { setTheme(!isDark()); });
-
-            document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape') {
-                    if (menuOpen()) { closeMenu(); if (profileBtn) profileBtn.focus(); }
-                    else closeSidebar();
-                }
-            });
 
             /* Service status follows device clock (08:00-17:00) */
             var status = document.getElementById('admin-service-status');

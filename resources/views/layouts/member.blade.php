@@ -87,11 +87,9 @@
                         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#75777F] dark:text-[#8c909e] text-[20px] pointer-events-none" aria-hidden="true">search</span>
                         <input name="q" value="{{ request('q') }}" type="text" aria-label="Cari katalog" class="w-full h-10 pl-10 pr-3 rounded-lg bg-[#F0F3FF] dark:bg-[#131B2E] border border-transparent focus:border-secondary focus:ring-2 focus:ring-secondary/15 text-[13px] text-[#111C2D] dark:text-[#DAE2FD] placeholder:text-[#75777F] dark:placeholder:text-[#8c909e]" placeholder="Cari koleksi buku, pengarang, ISBN...">
                     </form>
-                    <span class="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#F0F3FF] dark:bg-[#1A2440] border border-line dark:border-[#263252]" id="member-service-status" data-open="true">
+                    <span class="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#F0F3FF] dark:bg-[#1A2440] border border-line dark:border-[#263252]" id="member-service-status" data-open="true">
                         <span class="status-dot w-2 h-2 rounded-full bg-success animate-pulse" aria-hidden="true"></span>
-                        <span class="status-label text-[12px] font-medium text-navy dark:text-white">Perpustakaan Buka</span>
-                        <span class="status-sep text-[#75777F] dark:text-[#8c909e] text-[12px]">•</span>
-                        <span class="status-text text-[12px] text-[#45464E] dark:text-[#9AA7C2]">Jam Layanan 08:00 - 17:00</span>
+                        <span class="status-text text-[12px] font-semibold text-[#45464E] dark:text-[#9AA7C2]">Buka • 08:00 - 17:00</span>
                     </span>
                 </div>
                 <div class="flex items-center gap-3">
@@ -103,7 +101,7 @@
                     </a>
                     <div class="h-6 w-px bg-line dark:bg-[#263252]"></div>
                     <div class="relative" id="member-profile-wrap">
-                        <button id="member-profile-button" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="member-profile-menu" class="flex items-center gap-2.5 p-1.5 rounded-xl hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440] transition-colors cursor-pointer">
+                        <button id="member-profile-button" type="button" data-dd-toggle aria-haspopup="true" aria-expanded="false" aria-controls="member-profile-menu" class="flex items-center gap-2.5 p-1.5 rounded-xl hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440] transition-colors cursor-pointer">
                             <span class="w-8 h-8 rounded-full bg-navy text-white flex items-center justify-center font-poppins font-semibold text-[13px]" aria-hidden="true">{{ strtoupper(substr($m?->name ?? 'M', 0, 1)) }}</span>
                             <span class="hidden md:flex flex-col text-left leading-tight">
                                 <span class="text-[12px] font-semibold text-navy dark:text-white max-w-[140px] truncate">{{ $m?->name ?? '' }}</span>
@@ -111,7 +109,7 @@
                             </span>
                             <span class="material-symbols-outlined text-[18px] text-[#75777F] dark:text-[#8c909e]" aria-hidden="true">expand_more</span>
                         </button>
-                        <div id="member-profile-menu" hidden class="absolute right-0 top-full mt-2 w-64 rounded-xl bg-white dark:bg-[#131B2E] border border-line dark:border-[#263252] shadow-lg z-50 p-1 flex flex-col gap-0.5">
+                        <div id="member-profile-menu" data-dd-menu aria-labelledby="member-profile-button" hidden class="absolute right-0 top-full mt-2 w-64 rounded-xl bg-white dark:bg-[#131B2E] border border-line dark:border-[#263252] shadow-lg z-50 p-1 flex flex-col gap-0.5">
                             <div class="px-3 py-2">
                                 <div class="text-[12px] font-semibold text-navy dark:text-white truncate">{{ $m?->name ?? '' }}</div>
                                 <div class="text-[11px] text-[#45464E] dark:text-[#9AA7C2] truncate">{{ $m?->email ?? '' }}</div>
@@ -168,21 +166,38 @@
                 if (overlay) overlay.addEventListener('click', closeSidebar);
             }
 
-            /* Dropdown akun */
-            var btn = document.getElementById('member-profile-button');
-            var menu = document.getElementById('member-profile-menu');
-            function open() { if (!menu || !btn) return; menu.hidden = false; btn.setAttribute('aria-expanded', 'true'); }
-            function close() { if (!menu || !btn) return; menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
-            function isOpen() { return !!menu && menu.hidden === false; }
-            if (btn && menu) {
-                btn.addEventListener('click', function (e) {
-                    e.stopPropagation();
-                    if (isOpen()) close(); else open();
-                });
+            /* Dropdown akun (delegasi global, terdaftar satu kali) */
+            window.__librariaDropdown = window.__librariaDropdown || (function () {
+                function closeAll() {
+                    document.querySelectorAll('[data-dd-menu]').forEach(function (menu) {
+                        if (menu.hidden) return;
+                        menu.hidden = true;
+                        var b = document.getElementById(menu.getAttribute('aria-labelledby') || '');
+                        if (b) b.setAttribute('aria-expanded', 'false');
+                    });
+                }
                 document.addEventListener('click', function (e) {
-                    if (isOpen() && !menu.contains(e.target) && !btn.contains(e.target)) close();
+                    var toggle = e.target.closest ? e.target.closest('[data-dd-toggle]') : null;
+                    var menu = toggle ? document.getElementById(toggle.getAttribute('aria-controls')) : null;
+                    var wasOpen = !!(menu && !menu.hidden);
+                    closeAll();
+                    if (!toggle || wasOpen) return;
+                    e.preventDefault();
+                    if (menu) {
+                        menu.hidden = false;
+                        toggle.setAttribute('aria-expanded', 'true');
+                    }
                 });
-            }
+                document.addEventListener('keydown', function (e) {
+                    if (e.key !== 'Escape') return;
+                    var openMenu = document.querySelector('[data-dd-menu]:not([hidden])');
+                    if (!openMenu) { closeSidebar(); return; }
+                    closeAll();
+                    var b = document.getElementById(openMenu.getAttribute('aria-labelledby') || '');
+                    if (b) b.focus();
+                });
+                return true;
+            })();
 
             /* Tema */
             var themeRow = document.getElementById('member-theme-row');
@@ -197,12 +212,6 @@
             renderTheme();
             if (themeRow) themeRow.addEventListener('click', function () { setTheme(!isDark()); });
 
-            document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape') {
-                    if (isOpen()) { close(); if (btn) btn.focus(); } else { closeSidebar(); }
-                }
-            });
-
             /* Jam layanan mengikuti jam perangkat */
             var status = document.getElementById('member-service-status');
             function tick() {
@@ -211,11 +220,9 @@
                 var mins = d.getHours() * 60 + d.getMinutes();
                 var open = mins >= 480 && mins < 1020;
                 var dot = status.querySelector('.status-dot');
-                var label = status.querySelector('.status-label');
                 var txt = status.querySelector('.status-text');
                 if (dot) { dot.classList.toggle('bg-success', open); dot.classList.toggle('bg-warning', !open); }
-                if (label) label.textContent = open ? 'Perpustakaan Buka' : 'Perpustakaan Tutup';
-                if (txt) txt.textContent = 'Jam Layanan 08:00 - 17:00';
+                if (txt) txt.textContent = open ? 'Buka • 08:00 - 17:00' : 'Tutup • 08:00 - 17:00';
             }
             tick();
             window.setInterval(tick, 60000);
