@@ -109,7 +109,7 @@
                             </span>
                             <span class="material-symbols-outlined text-[18px] text-[#75777F] dark:text-[#8c909e]" aria-hidden="true">expand_more</span>
                         </button>
-                        <div id="member-profile-menu" data-dd-menu aria-labelledby="member-profile-button" hidden class="absolute right-0 top-full mt-2 w-64 rounded-xl bg-white dark:bg-[#131B2E] border border-line dark:border-[#263252] shadow-lg z-50 p-1 flex flex-col gap-0.5">
+                        <div id="member-profile-menu" data-dd-menu aria-labelledby="member-profile-button" hidden class="absolute right-0 top-full mt-2 w-64 rounded-xl bg-white dark:bg-[#131B2E] border border-line dark:border-[#263252] shadow-lg z-50 p-1 space-y-0.5">
                             <div class="px-3 py-2">
                                 <div class="text-[12px] font-semibold text-navy dark:text-white truncate">{{ $m?->name ?? '' }}</div>
                                 <div class="text-[11px] text-[#45464E] dark:text-[#9AA7C2] truncate">{{ $m?->email ?? '' }}</div>
