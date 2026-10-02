@@ -40,16 +40,10 @@
     <div id="member-overlay" class="hidden fixed inset-0 bg-black/40 z-40 lg:hidden"></div>
     <aside id="member-sidebar" class="fixed left-0 top-0 h-full w-[250px] bg-white dark:bg-[#131B2E] border-r border-line dark:border-[#263252] z-50 flex flex-col justify-between -translate-x-full lg:translate-x-0 transition-transform duration-200">
         <div class="flex flex-col min-h-0">
-            <div class="h-16 px-4 flex items-center gap-2.5 border-b border-line dark:border-[#263252] shrink-0">
-                <span class="w-9 h-9 rounded-xl bg-brand/15 dark:bg-[#508ff8]/20 text-brand dark:text-[#9CC2FF] flex items-center justify-center shrink-0">
-                    <span class="material-symbols-outlined text-[20px]" aria-hidden="true">local_library</span>
-                </span>
+            <div class="h-16 px-6 flex items-center gap-2.5 border-b border-line dark:border-[#263252] shrink-0">
+                <img src="{{ asset('assets/logo/libraria-mark.svg') }}" alt="Logo LIBRARIA" class="h-8 w-8 object-contain">
                 <div class="flex flex-col min-w-0">
-                    <div class="flex items-center gap-1.5">
-                        <span class="font-poppins font-semibold text-[1.05rem] text-navy dark:text-white tracking-tight">Libraria</span>
-                        <span class="px-1.5 py-0.5 rounded-full bg-gold/20 text-[#8A5A1D] dark:text-[#e3c290] text-[10px] uppercase tracking-wider font-semibold">Patron</span>
-                    </div>
-                    <span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2]">Member Area</span>
+                    <span class="text-navy dark:text-white font-poppins font-bold text-[20px] tracking-tight leading-none">Libraria</span>
                 </div>
             </div>
             <nav class="flex flex-col gap-1 p-2 mt-2 overflow-y-auto" aria-label="Navigasi member">
@@ -83,9 +77,9 @@
                     <button id="member-nav-toggle" type="button" class="lg:hidden p-2 rounded-lg text-[#45464E] dark:text-[#9AA7C2] hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440]" aria-label="Buka menu navigasi">
                         <span class="material-symbols-outlined text-[22px]" aria-hidden="true">menu</span>
                     </button>
-                    <form action="/member/books" method="GET" class="relative hidden sm:block w-80">
-                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#75777F] dark:text-[#8c909e] text-[20px] pointer-events-none" aria-hidden="true">search</span>
-                        <input name="q" value="{{ request('q') }}" type="text" aria-label="Cari katalog" class="w-full h-10 pl-10 pr-3 rounded-lg bg-[#F0F3FF] dark:bg-[#131B2E] border border-transparent focus:border-secondary focus:ring-2 focus:ring-secondary/15 text-[13px] text-[#111C2D] dark:text-[#DAE2FD] placeholder:text-[#75777F] dark:placeholder:text-[#8c909e]" placeholder="Cari koleksi buku, pengarang, ISBN...">
+                    <form action="/member/books" method="GET" class="relative hidden sm:block w-full max-w-xl">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#75777F] text-[20px] pointer-events-none" aria-hidden="true">search</span>
+                        <input name="q" value="{{ request('q') }}" class="w-full h-10 pl-10 pr-4 bg-canvas dark:bg-[#131B2E] border border-line dark:border-[#263252] rounded-lg text-[13px] text-[#111C2D] dark:text-[#DAE2FD] placeholder:text-[#45464E] dark:placeholder:text-[#9AA7C2] focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/15" placeholder="Cari judul buku atau ISBN..." type="text" aria-label="Cari katalog">
                     </form>
                     <span class="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#F0F3FF] dark:bg-[#1A2440] border border-line dark:border-[#263252]" id="member-service-status" data-open="true">
                         <span class="status-dot w-2 h-2 rounded-full bg-success animate-pulse" aria-hidden="true"></span>
@@ -101,12 +95,9 @@
                     </a>
                     <div class="h-6 w-px bg-line dark:bg-[#263252]"></div>
                     <div class="relative" id="member-profile-wrap">
-                        <button id="member-profile-button" type="button" data-dd-toggle aria-haspopup="true" aria-expanded="false" aria-controls="member-profile-menu" class="flex items-center gap-2.5 p-1.5 rounded-xl hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440] transition-colors cursor-pointer">
+                        <button id="member-profile-button" type="button" data-dd-toggle aria-haspopup="true" aria-expanded="false" aria-controls="member-profile-menu" class="flex items-center gap-2.5 pl-1 pr-2 py-1 rounded-xl hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440] border border-transparent hover:border-line dark:hover:border-[#263252] transition-all cursor-pointer">
                             <span class="w-8 h-8 rounded-full bg-navy text-white flex items-center justify-center font-poppins font-semibold text-[13px]" aria-hidden="true">{{ strtoupper(substr($m?->name ?? 'M', 0, 1)) }}</span>
-                            <span class="hidden md:flex flex-col text-left leading-tight">
-                                <span class="text-[12px] font-semibold text-navy dark:text-white max-w-[140px] truncate">{{ $m?->name ?? '' }}</span>
-                                <span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2]">{{ $m?->member_code ?? '' }}</span>
-                            </span>
+                            <span class="hidden md:block text-[13px] font-semibold text-primary dark:text-white leading-tight max-w-[140px] truncate">{{ $m?->name ?? '' }}</span>
                             <span class="material-symbols-outlined text-[18px] text-[#75777F] dark:text-[#8c909e]" aria-hidden="true">expand_more</span>
                         </button>
                         <div id="member-profile-menu" data-dd-menu aria-labelledby="member-profile-button" hidden class="absolute right-0 top-full mt-2 w-64 rounded-xl bg-white dark:bg-[#131B2E] border border-line dark:border-[#263252] shadow-lg z-50 p-1 space-y-0.5">
