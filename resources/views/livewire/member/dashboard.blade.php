@@ -1,202 +1,217 @@
 <div class="space-y-6">
-    {{-- Hero / identitas anggota --}}
-    <section class="relative overflow-hidden rounded-xl text-white border border-[#2A3B60]" style="background: linear-gradient(to right, #1F2D4D, #1A2642, #16223B);">
+    {{-- Hero --}}
+    <section class="relative overflow-hidden rounded-xl text-white p-6 lg:p-8 border border-[#2A3B60]" style="background: linear-gradient(to right, #1F2D4D, #1A2642, #16223B);">
         <div class="absolute -right-12 -top-12 w-80 h-80 rounded-full bg-[#4F8EF7]/10 blur-3xl pointer-events-none" aria-hidden="true"></div>
         <div class="absolute right-1/4 -bottom-20 w-64 h-64 rounded-full bg-[#D4B483]/15 blur-2xl pointer-events-none" aria-hidden="true"></div>
-        <div class="relative z-10 p-6 lg:p-8 flex flex-col lg:flex-row lg:items-center gap-6 justify-between">
-            <div class="space-y-2">
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            <div class="space-y-2 max-w-2xl">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#16223B]/80 border border-[#D4B483]/30 text-[#D4B483] text-[11px] font-semibold tracking-wider uppercase">
                     <span class="w-2 h-2 rounded-full bg-[#D4B483] animate-pulse" aria-hidden="true"></span>Portal Pemustaka
                 </div>
-                <h1 class="font-poppins text-[32px] leading-[40px] font-bold tracking-tight">Halo, {{ $member->name }}</h1>
-                <p class="text-[14px] text-white/85">Pantau status peminjaman dan riwayat baca Anda di sini.</p>
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#D4B483]/20 border border-[#D4B483]/40 text-[#D4B483] font-medium text-[13px]">
-                    <span class="material-symbols-outlined text-[16px]" aria-hidden="true">local_florist</span>
-                    <span class="font-poppins">More Than Books. A Brighter Tomorrow.</span>
-                </span>
+                <h1 class="font-poppins text-[32px] leading-[40px] font-bold tracking-tight">Selamat datang kembali, {{ $firstName }}</h1>
+                <p class="text-[14px] text-white/90">Pantau status peminjaman, riwayat baca, dan masa aktif keanggotaan Anda.</p>
+                <div class="pt-2 flex items-center gap-2">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#D4B483]/20 border border-[#D4B483]/40 text-[#D4B483] font-medium text-[14px]">
+                        <span class="material-symbols-outlined text-[16px]" aria-hidden="true">local_florist</span>
+                        <span class="font-poppins">More Than Books. A Brighter Tomorrow.</span>
+                    </span>
+                </div>
             </div>
-            <div class="flex flex-wrap items-center gap-2.5">
-                <span class="px-4 py-3 rounded-xl bg-white/10 border border-white/15 text-center">
-                    <span class="block text-[11px] text-white/60 uppercase tracking-wider">Member ID</span>
-                    <span class="block font-poppins text-[20px] font-bold tracking-wider mt-0.5">{{ $member->member_code }}</span>
-                </span>
-                <span class="px-4 py-3 rounded-xl bg-white/10 border border-white/15 text-center">
-                    <span class="block text-[11px] text-white/60 uppercase tracking-wider">Masa Aktif</span>
-                    <span class="block font-poppins text-[20px] font-bold mt-0.5">{{ $member->active_until ? \Carbon\Carbon::parse($member->active_until)->format('d M Y') : '—' }}</span>
-                </span>
+            <div class="flex flex-wrap items-center gap-3">
+                <a href="/member/books" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#4F8EF7] text-white font-poppins font-semibold text-[14px] hover:brightness-110">
+                    <span class="material-symbols-outlined text-[20px]" aria-hidden="true">search</span><span>Lihat Katalog</span>
+                </a>
+                <a href="/member/borrowings" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white/10 text-white font-poppins font-medium text-[14px] border border-[#D4B483]/40 hover:bg-white/20">
+                    <span class="material-symbols-outlined text-[20px] text-[#D4B483]" aria-hidden="true">local_library</span><span>Pinjaman Saya</span>
+                </a>
             </div>
         </div>
     </section>
 
-    {{-- Metrik --}}
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <a href="/member/borrowings" class="p-4 rounded-xl bg-white dark:bg-[#131B2E] border border-line dark:border-[#263252] flex items-center justify-between hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440] transition-colors">
-            <div class="flex flex-col">
-                <span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2] uppercase tracking-wide">Sedang Dipinjam</span>
-                <span class="font-poppins text-[24px] leading-8 text-primary dark:text-white font-semibold mt-0.5">{{ number_format($activeCount) }}</span>
-                <span class="text-[11px] text-secondary dark:text-[#9CC2FF] mt-1">{{ $activeBooks->count() }} judul buku</span>
+    {{-- Stat cards --}}
+    <section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4" aria-label="Statistik">
+        <div class="bg-white dark:bg-[#131B2E] rounded-xl p-4 border border-line dark:border-[#263252] flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+                <span class="text-[12px] text-[#45464E] dark:text-[#9AA7C2] uppercase tracking-wider font-semibold">Total Koleksi</span>
+                <span class="w-8 h-8 rounded-lg bg-navy/10 text-navy dark:text-white flex items-center justify-center"><span class="material-symbols-outlined text-[18px]" aria-hidden="true">menu_book</span></span>
             </div>
-            <span class="w-11 h-11 rounded-xl bg-[#F0F3FF] dark:bg-[#1A2440] flex items-center justify-center text-secondary dark:text-[#9CC2FF]"><span class="material-symbols-outlined text-[24px]" aria-hidden="true">auto_stories</span></span>
-        </a>
-        <a href="/member/borrowings" class="p-4 rounded-xl bg-white dark:bg-[#131B2E] border {{ $overdueCount > 0 ? 'border-red-200 dark:border-[#BA1A1A]/50' : 'border-line dark:border-[#263252]' }} flex items-center justify-between hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440] transition-colors">
-            <div class="flex flex-col">
-                <span class="text-[11px] text-error dark:text-[#FFB4AB] font-semibold uppercase tracking-wide">Terlambat</span>
-                <span class="font-poppins text-[24px] leading-8 text-error dark:text-[#FFB4AB] font-semibold mt-0.5">{{ number_format($overdueCount) }}</span>
-                <span class="text-[11px] text-error dark:text-[#FFB4AB] mt-1">segera dikembalikan</span>
+            <div class="mt-4"><div class="font-poppins text-[32px] text-navy dark:text-white font-bold leading-none">{{ number_format($totalTitles) }}</div><span class="text-[13px] text-[#45464E] dark:text-[#9AA7C2]">judul terdaftar</span></div>
+            <div class="mt-3 pt-3 border-t border-line dark:border-[#263252] flex items-center gap-1.5 text-[11px] text-success font-medium"><span class="material-symbols-outlined text-[16px]" aria-hidden="true">library_books</span><span>{{ number_format($totalStock) }} eksemplar</span></div>
+        </div>
+        <div class="bg-white dark:bg-[#131B2E] rounded-xl p-4 border border-line dark:border-[#263252] flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+                <span class="text-[12px] text-[#45464E] dark:text-[#9AA7C2] uppercase tracking-wider font-semibold">Buku di Rak</span>
+                <span class="w-8 h-8 rounded-lg bg-brand/10 text-brand flex items-center justify-center"><span class="material-symbols-outlined text-[18px]" aria-hidden="true">shelves</span></span>
             </div>
-            <span class="w-11 h-11 rounded-xl bg-errorbox dark:bg-[#BA1A1A]/20 flex items-center justify-center text-error dark:text-[#FFB4AB]"><span class="material-symbols-outlined text-[24px]" aria-hidden="true">timer_off</span></span>
-        </a>
-        <a href="/member/history" class="p-4 rounded-xl bg-white dark:bg-[#131B2E] border border-line dark:border-[#263252] flex items-center justify-between hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440] transition-colors">
-            <div class="flex flex-col">
-                <span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2] uppercase tracking-wide">Total Riwayat</span>
-                <span class="font-poppins text-[24px] leading-8 text-primary dark:text-white font-semibold mt-0.5">{{ number_format($historyCount) }}</span>
-                <span class="text-[11px] text-success flex items-center gap-0.5 mt-1 font-medium"><span class="material-symbols-outlined text-[14px]" aria-hidden="true">check_circle</span> buku selesai</span>
+            <div class="mt-4"><div class="font-poppins text-[32px] text-navy dark:text-white font-bold leading-none">{{ number_format($totalStock) }}</div><span class="text-[13px] text-[#45464E] dark:text-[#9AA7C2]">eksemplar siap dipinjam</span></div>
+            <div class="mt-3 pt-3 border-t border-line dark:border-[#263252] flex items-center gap-1.5 text-[11px] text-success font-medium"><span class="inline-block w-2 h-2 rounded-full bg-success" aria-hidden="true"></span><span>{{ 100 - $inCirculation }}% ketersediaan</span></div>
+        </div>
+        <div class="bg-white dark:bg-[#131B2E] rounded-xl p-4 border border-line dark:border-[#263252] flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+                <span class="text-[12px] text-[#45464E] dark:text-[#9AA7C2] uppercase tracking-wider font-semibold">Sedang Dipinjam</span>
+                <span class="w-8 h-8 rounded-lg bg-brand/15 text-brand flex items-center justify-center"><span class="material-symbols-outlined text-[18px]" aria-hidden="true">sync_alt</span></span>
             </div>
-            <span class="w-11 h-11 rounded-xl bg-[#F0F3FF] dark:bg-[#1A2440] flex items-center justify-center text-success"><span class="material-symbols-outlined text-[24px]" aria-hidden="true">history</span></span>
-        </a>
-        <a href="/member/books" class="p-4 rounded-xl bg-white dark:bg-[#131B2E] border border-line dark:border-[#263252] flex items-center justify-between hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440] transition-colors">
-            <div class="flex flex-col">
-                <span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2] uppercase tracking-wide">Koleksi Tersedia</span>
-                <span class="font-poppins text-[24px] leading-8 text-primary dark:text-white font-semibold mt-0.5">{{ number_format($availableBooks) }}</span>
-                <span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2] mt-1">{{ number_format($totalTitles) }} judul katalog</span>
+            <div class="mt-4"><div class="font-poppins text-[32px] text-navy dark:text-white font-bold leading-none">{{ number_format($activeQty) }}</div><span class="text-[13px] text-[#45464E] dark:text-[#9AA7C2]">eksemplar milik Anda</span></div>
+            <div class="mt-3 pt-3 border-t border-line dark:border-[#263252] flex items-center gap-1.5 text-[11px] text-brand font-medium"><span class="material-symbols-outlined text-[16px]" aria-hidden="true">timelapse</span><span>{{ $activeCount }} transaksi aktif</span></div>
+        </div>
+        <div class="bg-white dark:bg-[#131B2E] rounded-xl p-4 border border-line dark:border-[#263252] flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+                <span class="text-[12px] text-[#45464E] dark:text-[#9AA7C2] uppercase tracking-wider font-semibold">Riwayat Baca</span>
+                <span class="w-8 h-8 rounded-lg bg-gold/20 text-navy dark:text-white flex items-center justify-center"><span class="material-symbols-outlined text-[18px] text-golddark dark:text-gold" aria-hidden="true">auto_stories</span></span>
             </div>
-            <span class="w-11 h-11 rounded-xl bg-[#F0F3FF] dark:bg-[#1A2440] flex items-center justify-center text-navy dark:text-white"><span class="material-symbols-outlined text-[24px]" aria-hidden="true">library_books</span></span>
-        </a>
-    </div>
+            <div class="mt-4"><div class="font-poppins text-[32px] text-navy dark:text-white font-bold leading-none">{{ number_format($historyCount) }}</div><span class="text-[13px] text-[#45464E] dark:text-[#9AA7C2]">eksemplar telah dibaca</span></div>
+            <div class="mt-3 pt-3 border-t border-line dark:border-[#263252] flex items-center gap-1.5 text-[11px] text-success font-medium"><span class="material-symbols-outlined text-[16px]" aria-hidden="true">verified_user</span><span>anggota {{ $member->member_code }}</span></div>
+        </div>
+        <div class="bg-white dark:bg-[#131B2E] rounded-xl p-4 border {{ $overdueCount > 0 ? 'border-red-200 dark:border-[#BA1A1A]/50' : 'border-line dark:border-[#263252]' }} flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+                <span class="text-[12px] text-error dark:text-[#FFB4AB] uppercase tracking-wider font-bold">Jatuh Tempo</span>
+                <span class="w-8 h-8 rounded-lg bg-errorbox dark:bg-[#BA1A1A]/20 text-error dark:text-[#FFB4AB] flex items-center justify-center"><span class="material-symbols-outlined text-[18px]" aria-hidden="true">warning</span></span>
+            </div>
+            <div class="mt-4"><div class="font-poppins text-[32px] text-error dark:text-[#FFB4AB] font-bold leading-none">{{ number_format($overdueCount) }}</div><span class="text-[13px] text-[#45464E] dark:text-[#9AA7C2]">transaksi terlambat</span></div>
+            <div class="mt-3 pt-3 border-t border-line dark:border-[#263252] flex items-center gap-1.5 text-[11px] text-error dark:text-[#FFB4AB] font-semibold"><span class="material-symbols-outlined text-[16px]" aria-hidden="true">notification_important</span><span>{{ $overdueCount > 0 ? 'Perlu dikembalikan' : 'Nihil' }}</span></div>
+        </div>
+    </section>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {{-- Peminjaman aktif --}}
+        {{-- Kolom kiri --}}
         <div class="lg:col-span-7 xl:col-span-8 space-y-6">
-            <div class="bg-white dark:bg-[#131B2E] rounded-xl border border-line dark:border-[#263252] overflow-hidden">
-                <div class="p-6 pb-4 flex items-center justify-between gap-3 border-b border-line dark:border-[#263252]">
+            <div class="bg-white dark:bg-[#131B2E] rounded-xl p-6 border border-line dark:border-[#263252]">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 gap-2 border-b border-line dark:border-[#263252]">
                     <div>
-                        <h2 class="font-poppins text-[24px] text-primary dark:text-white font-bold">Buku Sedang Dipinjam</h2>
-                        <p class="text-[13px] text-[#45464E] dark:text-[#9AA7C2]">Daftar buku yang masih berada di tangan Anda</p>
+                        <h2 class="font-poppins text-[24px] text-navy dark:text-white font-bold">Aktivitas Peminjaman Mingguan</h2>
+                        <p class="text-[13px] text-[#45464E] dark:text-[#9AA7C2]">Perbandingan jumlah peminjaman versus pengembalian (6 hari terakhir)</p>
                     </div>
-                    <a href="/member/borrowings" class="flex items-center gap-1 text-[13px] font-semibold text-secondary dark:text-[#9CC2FF] hover:underline">
-                        <span>Lihat semua</span><span class="material-symbols-outlined text-[16px]" aria-hidden="true">chevron_right</span>
-                    </a>
+                    <div class="flex items-center gap-4 text-[11px]">
+                        <span class="flex items-center gap-1.5 text-navy dark:text-white font-medium"><span class="w-3 h-3 rounded-full bg-brand" aria-hidden="true"></span> Peminjaman</span>
+                        <span class="flex items-center gap-1.5 text-navy dark:text-white font-medium"><span class="w-3 h-3 rounded-full bg-gold" aria-hidden="true"></span> Pengembalian</span>
+                    </div>
                 </div>
-                @php($today = now()->toDateString())
-                @if($activeCount > 0)
-                    <div class="p-6 space-y-3">
-                        @foreach($activeDetails as $d)
-                            @php($borrowing = $d->borrowing)
-                            <div class="p-3 rounded-lg bg-[#F0F3FF]/50 dark:bg-[#1A2440]/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                                <div class="flex items-center gap-3 min-w-0">
-                                    <span class="w-10 h-12 rounded-lg bg-navy text-white flex items-center justify-center font-poppins font-semibold text-[15px] flex-shrink-0" aria-hidden="true">{{ strtoupper(substr($d->book->title ?? '?', 0, 1)) }}</span>
-                                    <div class="min-w-0">
-                                        <span class="font-poppins text-[15px] font-semibold text-primary dark:text-white truncate block">{{ $d->book->title ?? '-' }}</span>
-                                        <span class="text-[12px] text-[#45464E] dark:text-[#9AA7C2]">
-                                            {{ $d->book->author ?? '-' }} • {{ $d->quantity }} eksemplar
-                                            @if($borrowing) • Jatuh tempo {{ \Carbon\Carbon::parse($borrowing->due_at)->format('d M Y') }} @endif
-                                        </span>
+                <div class="pt-4">
+                    <div class="h-64 w-full flex items-end justify-between gap-3 px-2">
+                        @foreach($chart as $i => $d)
+                            <div class="flex-1 flex flex-col items-center gap-2 h-full justify-end group cursor-default">
+                                <div class="relative w-full flex items-end justify-center gap-1.5 h-48">
+                                    <div class="w-4 sm:w-6 bg-brand rounded-t" style="height: {{ round($d['borrow'] / $chartMax * 100) }}%;" title="Peminjaman: {{ $d['borrow'] }}">
+                                        <div class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-navy text-white text-[11px] px-1.5 py-0.5 rounded pointer-events-none">{{ $d['borrow'] }}</div>
                                     </div>
+                                    <div class="w-4 sm:w-6 bg-gold rounded-t" style="height: {{ round($d['return'] / $chartMax * 100) }}%;" title="Pengembalian: {{ $d['return'] }}"></div>
                                 </div>
-                                @if($borrowing)
-                                    @if($borrowing->due_at < $today)
-                                        <span class="px-2.5 py-1 rounded-md bg-errorbox dark:bg-[#BA1A1A]/20 text-error dark:text-[#FFB4AB] text-[12px] font-semibold whitespace-nowrap">Terlambat {{ (int) \Carbon\Carbon::parse($borrowing->due_at)->diffInDays($today) }} hari</span>
-                                    @else
-                                        <span class="px-2.5 py-1 rounded-md bg-success/15 text-success text-[12px] font-semibold whitespace-nowrap">{{ (int) \Carbon\Carbon::parse($today)->diffInDays($borrowing->due_at) }} hari lagi</span>
-                                    @endif
-                                @endif
+                                <span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2] {{ $i === count($chart) - 1 ? 'text-navy dark:text-white font-bold' : '' }}">{{ $d['label'] }}</span>
                             </div>
                         @endforeach
-                        @if($overdueCount > 0)
-                            <p class="text-[12px] text-error dark:text-[#FFB4AB] flex items-center gap-1.5 pt-1"><span class="material-symbols-outlined text-[16px]" aria-hidden="true">warning</span>Ada {{ $overdueCount }} buku yang melewati batas waktu. Segera dikembalikan ke petugas.</p>
-                        @elseif($dueSoonCount > 0)
-                            <p class="text-[12px] text-warning flex items-center gap-1.5 pt-1"><span class="material-symbols-outlined text-[16px]" aria-hidden="true">schedule</span>{{ $dueSoonCount }} buku jatuh tempo dalam 3 hari ke depan.</p>
-                        @endif
                     </div>
-                @else
-                    <div class="p-10 text-center">
-                        <span class="material-symbols-outlined text-[40px] text-[#AE9163]" aria-hidden="true">library_books</span>
-                        <p class="text-[14px] text-primary dark:text-white font-semibold mt-2">Tidak ada buku yang sedang dipinjam</p>
-                        <p class="text-[13px] text-[#45464E] dark:text-[#9AA7C2] mt-1">Jelajahi katalog untuk melihat koleksi yang tersedia.</p>
-                        <a href="/member/books" class="inline-flex items-center gap-1.5 mt-4 px-4 py-2.5 rounded-lg bg-secondary text-white text-[14px] font-medium hover:brightness-110"><span class="material-symbols-outlined text-[18px]" aria-hidden="true">search</span>Lihat Katalog</a>
-                    </div>
-                @endif
+                </div>
+                <div class="mt-4 pt-3 flex flex-wrap items-center justify-between text-[14px] text-[#45464E] dark:text-[#9AA7C2] bg-[#F0F3FF] dark:bg-[#1A2440] px-3 py-2 rounded-lg border border-[#D8E3FB] dark:border-[#263252]">
+                    <span class="flex items-center gap-1 text-[12px] text-navy dark:text-white"><span class="material-symbols-outlined text-[16px] text-brand" aria-hidden="true">info</span>Total {{ $chart->sum('borrow') }} peminjaman &amp; {{ $chart->sum('return') }} pengembalian pekan ini.</span>
+                    <a class="text-brand font-semibold hover:underline flex items-center gap-1 text-[13px]" href="/member/history">Lihat Riwayat Lengkap<span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_forward</span></a>
+                </div>
             </div>
 
-            {{-- Riwayat terbaru --}}
-            <div class="bg-white dark:bg-[#131B2E] rounded-xl border border-line dark:border-[#263252] overflow-hidden">
-                <div class="p-6 pb-4 flex items-center justify-between gap-3 border-b border-line dark:border-[#263252]">
+            <div class="bg-white dark:bg-[#131B2E] rounded-xl p-6 border border-line dark:border-[#263252]">
+                <div class="flex items-center justify-between pb-2">
                     <div>
-                        <h2 class="font-poppins text-[24px] text-primary dark:text-white font-bold">Riwayat Terbaru</h2>
-                        <p class="text-[13px] text-[#45464E] dark:text-[#9AA7C2]">Buku yang sudah Anda kembalikan</p>
+                        <h2 class="font-poppins text-[24px] text-navy dark:text-white font-bold">Buku yang Pernah Dipinjam</h2>
+                        <p class="text-[13px] text-[#45464E] dark:text-[#9AA7C2]">Koleksi dengan frekuensi peminjaman tertinggi oleh Anda</p>
                     </div>
-                    <a href="/member/history" class="flex items-center gap-1 text-[13px] font-semibold text-secondary dark:text-[#9CC2FF] hover:underline"><span>Semua riwayat</span><span class="material-symbols-outlined text-[16px]" aria-hidden="true">chevron_right</span></a>
+                    <span class="px-2.5 py-1 rounded bg-[#DEE8FF] dark:bg-[#263252] text-navy dark:text-[#C6D2E8] text-[11px]">Top {{ count($frequent) }}</span>
                 </div>
-                @if($returnedDetails->count() > 0)
-                    <div class="p-6">
-                        <div class="relative pl-6 space-y-4 before:content-[''] before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-[#DEE8FF] dark:before:bg-[#263252]">
-                            @foreach($returnedDetails as $r)
-                                <div class="relative">
-                                    <div class="absolute -left-6 top-1 w-3.5 h-3.5 rounded-full bg-success ring-4 ring-white dark:ring-[#131B2E]" aria-hidden="true"></div>
-                                    <div class="flex flex-col">
-                                        <div class="flex items-baseline justify-between gap-2">
-                                            <span class="font-poppins text-[14px] font-semibold text-primary dark:text-white">{{ $r->book->title ?? '-' }}</span>
-                                            <span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2] whitespace-nowrap">{{ $r->returned_at ? \Carbon\Carbon::parse($r->returned_at)->format('d M Y') : '-' }}</span>
-                                        </div>
-                                        <span class="text-[12px] text-[#45464E] dark:text-[#9AA7C2]">{{ $r->book->author ?? '' }} • {{ $r->quantity }} eksemplar</span>
-                                    </div>
+                <div class="space-y-3 pt-2">
+                    @forelse($frequent as $f)
+                        <div class="p-3 rounded-lg bg-[#F0F3FF]/40 dark:bg-[#1A2440]/50 hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440] transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-16 rounded overflow-hidden flex-shrink-0 bg-navy text-white flex flex-col items-center justify-center" aria-hidden="true">
+                                    <span class="material-symbols-outlined text-[22px]">menu_book</span>
+                                    <span class="font-poppins font-bold text-[13px]">{{ strtoupper(substr($f['book']->title, 0, 1)) }}</span>
                                 </div>
-                            @endforeach
+                                <div>
+                                    <div class="flex items-center gap-2 flex-wrap"><span class="text-navy dark:text-white font-semibold">{{ $f['book']->title }}</span><span class="px-2 py-0.5 text-[11px] rounded-full bg-[#E7EEFF] dark:bg-[#263252] text-[#45464E] dark:text-[#C6D2E8]">{{ $f['book']->category->name ?? '-' }}</span></div>
+                                    <p class="text-[13px] text-[#45464E] dark:text-[#9AA7C2]">{{ $f['book']->author }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 self-end sm:self-center">
+                                <div class="text-right"><div class="font-poppins text-[20px] text-navy dark:text-white font-bold">{{ $f['times'] }}x</div><span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2]">Dipinjam</span></div>
+                                @if($f['book']->stock > 1)
+                                    <span class="px-2.5 py-1 rounded-full text-[11px] bg-success/15 text-success font-medium flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-success" aria-hidden="true"></span> Tersedia ({{ $f['book']->stock }})</span>
+                                @elseif($f['book']->stock === 1)
+                                    <span class="px-2.5 py-1 rounded-full text-[11px] bg-warning/15 text-warning font-medium flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-warning" aria-hidden="true"></span> Menipis (1)</span>
+                                @else
+                                    <span class="px-2.5 py-1 rounded-full text-[11px] bg-errorbox dark:bg-[#BA1A1A]/20 text-error dark:text-[#FFB4AB] font-medium flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-error" aria-hidden="true"></span> Habis Dipinjam</span>
+                                @endif
+                            </div>
                         </div>
-                    </div>
-                @else
-                    <div class="p-10 text-center">
-                        <span class="material-symbols-outlined text-[40px] text-[#AE9163]" aria-hidden="true">history</span>
-                        <p class="text-[13px] text-[#45464E] dark:text-[#9AA7C2] mt-2">Belum ada riwayat peminjaman.</p>
-                    </div>
-                @endif
+                    @empty
+                        <p class="text-[13px] text-[#45464E] dark:text-[#9AA7C2] py-4 text-center">Belum ada riwayat peminjaman.</p>
+                    @endforelse
+                </div>
             </div>
         </div>
 
-        {{-- Sisi kanan: kartu anggota + info --}}
+        {{-- Kolom kanan --}}
         <div class="lg:col-span-5 xl:col-span-4 space-y-6">
-            <div class="bg-white dark:bg-[#131B2E] rounded-xl border border-line dark:border-[#263252] p-6">
-                <h2 class="font-poppins text-[16px] text-primary dark:text-white font-bold mb-4">Kartu Anggota</h2>
-                <div class="relative rounded-2xl p-5 text-white overflow-hidden flex flex-col justify-between min-h-[190px]" style="background: linear-gradient(to bottom right, #1F2D4D, #1A2642, #16223B);">
-                    <div class="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-[#4F8EF7]/20 blur-2xl pointer-events-none" aria-hidden="true"></div>
-                    <div class="relative z-10 flex items-start justify-between">
-                        <img src="{{ asset('assets/logo/libraria-mark.svg') }}" alt="" class="w-8 h-8" aria-hidden="true">
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold {{ $member->status === 'active' ? 'bg-success/20 text-white' : 'bg-danger/20 text-white' }}">{{ ucfirst($member->status) }}</span>
+            <div class="bg-white dark:bg-[#131B2E] rounded-xl p-6 border border-line dark:border-[#263252]">
+                <div class="flex items-center justify-between pb-2">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-danger text-[22px]" aria-hidden="true">notification_important</span>
+                        <h2 class="font-poppins text-[16px] text-navy dark:text-white font-bold">Peringatan Jatuh Tempo</h2>
                     </div>
-                    <div class="relative z-10 flex items-center gap-3 pt-3">
-                        <span class="w-12 h-[3.75rem] rounded-lg bg-white/15 border border-white/25 flex items-center justify-center font-poppins font-bold text-[20px] flex-shrink-0" aria-hidden="true">{{ strtoupper(substr($member->name, 0, 1)) }}</span>
-                        <div class="min-w-0">
-                            <span class="font-poppins text-[16px] font-semibold truncate block">{{ $member->name }}</span>
-                            <span class="text-[11px] font-mono tracking-widest text-[#D4B483]">{{ $member->member_code }}</span>
-                            <span class="block text-[11px] text-white/70 truncate">{{ $member->email }}</span>
-                        </div>
-                    </div>
-                    <div class="relative z-10 flex items-end justify-between pt-3 mt-3 border-t border-white/10">
-                        <span class="text-[9px] uppercase tracking-wider text-white/60">Masa Aktif</span>
-                        <span class="text-[12px] font-bold tracking-widest">{{ $member->active_until ? \Carbon\Carbon::parse($member->active_until)->format('d M Y') : '—' }}</span>
-                    </div>
+                    <span class="px-2 py-0.5 rounded-full bg-errorbox dark:bg-[#BA1A1A]/20 text-error dark:text-[#FFB4AB] text-[11px] font-semibold">{{ $overdueCount }} Terlambat</span>
                 </div>
-                <dl class="grid grid-cols-2 gap-2 mt-4 text-[13px]">
-                    <div class="bg-[#F0F3FF] dark:bg-[#1A2440] rounded-lg p-2.5">
-                        <dt class="text-[11px] text-[#45464E] dark:text-[#9AA7C2]">Telepon</dt>
-                        <dd class="font-semibold text-primary dark:text-white truncate">{{ $member->phone ?? '—' }}</dd>
-                    </div>
-                    <div class="bg-[#F0F3FF] dark:bg-[#1A2440] rounded-lg p-2.5">
-                        <dt class="text-[11px] text-[#45464E] dark:text-[#9AA7C2]">Terdaftar</dt>
-                        <dd class="font-semibold text-primary dark:text-white">{{ $member->created_at->format('M Y') }}</dd>
-                    </div>
-                </dl>
-                <a href="/member/profile" class="w-full mt-3 py-2.5 rounded-lg bg-[#F0F3FF] dark:bg-[#1A2440] hover:bg-[#E7EEFF] dark:hover:bg-[#263252] text-[14px] font-medium text-primary dark:text-white flex items-center justify-center gap-2">
-                    <span class="material-symbols-outlined text-[18px]" aria-hidden="true">badge</span>Kelola Profil
-                </a>
+                <p class="text-[13px] text-[#45464E] dark:text-[#9AA7C2] pb-2">Peminjaman melewati batas tanggal &amp; perlu dikembalikan ke petugas.</p>
+                <div class="space-y-3 pt-2">
+                    @forelse($overdueList->take(3) as $o)
+                        <div class="p-3 rounded-lg bg-[#F0F3FF]/60 dark:bg-[#1A2440]/60 flex flex-col gap-2.5">
+                            <div class="flex items-start justify-between gap-2">
+                                <div>
+                                    <div class="text-[14px] font-bold text-navy dark:text-white">Transaksi #{{ $o['borrowing']->id }}</div>
+                                    <div class="text-[13px] text-[#45464E] dark:text-[#9AA7C2] italic">
+                                        @foreach($o['books'] as $b)&lsquo;{{ $b->book->title ?? '' }}&rsquo;@if(!$loop->last), @endif@endforeach
+                                    </div>
+                                </div>
+                                <span class="px-2 py-0.5 rounded text-[11px] bg-errorbox dark:bg-[#BA1A1A]/20 text-error dark:text-[#FFB4AB] font-semibold whitespace-nowrap">Telat {{ $o['lateDays'] }} Hari</span>
+                            </div>
+                            <div class="flex items-center justify-end pt-1">
+                                <span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2]">Dikembalikan ke petugas perpustakaan</span>
+                            </div>
+                        </div>
+                    @empty
+                        <p class="text-[13px] text-[#45464E] dark:text-[#9AA7C2] py-2 text-center">Tidak ada keterlambatan. Kerja bagus!</p>
+                    @endforelse
+                </div>
+                <div class="pt-3 text-center">
+                    <a class="inline-flex items-center gap-1 text-[13px] font-semibold text-secondary dark:text-[#9CC2FF] hover:underline" href="/member/borrowings">
+                        <span>Kelola Semua Peminjaman</span><span class="material-symbols-outlined text-[16px]" aria-hidden="true">chevron_right</span>
+                    </a>
+                </div>
             </div>
 
-            <div class="bg-white dark:bg-[#131B2E] rounded-xl border border-line dark:border-[#263252] p-6">
-                <h2 class="font-poppins text-[16px] text-primary dark:text-white font-bold mb-2">Informasi Layanan</h2>
-                <div class="space-y-2.5 text-[13px] text-[#45464E] dark:text-[#9AA7C2]">
-                    <p class="flex items-start gap-2"><span class="material-symbols-outlined text-[18px] text-secondary dark:text-[#9CC2FF] shrink-0" aria-hidden="true">info</span><span>Peminjaman dan pengembalian buku diproses oleh petugas perpustakaan.</span></p>
-                    <p class="flex items-start gap-2"><span class="material-symbols-outlined text-[18px] text-[#AE9163] shrink-0" aria-hidden="true">schedule</span><span>Jam layanan: <strong>08:00 – 17:00 WIB</strong></span></p>
-                    <p class="flex items-start gap-2"><span class="material-symbols-outlined text-[18px] text-[#AE9163] shrink-0" aria-hidden="true">contact_support</span><span>Hubungi petugas bila Membership Anda bermasalah.</span></p>
+            <div class="bg-white dark:bg-[#131B2E] rounded-xl p-6 border border-line dark:border-[#263252]">
+                <div class="flex items-center justify-between pb-2">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-secondary text-[22px]" aria-hidden="true">history</span>
+                        <h2 class="font-poppins text-[16px] text-navy dark:text-white font-bold">Aktivitas Terkini</h2>
+                    </div>
+                    <span class="w-2 h-2 rounded-full bg-success animate-pulse" aria-hidden="true"></span>
+                </div>
+                <div class="relative pl-6 space-y-4 pt-2 before:content-[''] before:absolute before:left-2.5 before:top-3 before:bottom-3 before:w-0.5 before:bg-[#DEE8FF] dark:before:bg-[#263252]">
+                    @forelse($recent as $r)
+                        <div class="relative">
+                            <div class="absolute -left-6 top-1 w-3.5 h-3.5 rounded-full {{ $r->status === 'returned' ? 'bg-success' : 'bg-secondary' }} ring-4 ring-white dark:ring-[#131B2E]" aria-hidden="true"></div>
+                            <div class="flex flex-col">
+                                <div class="flex items-baseline justify-between gap-1">
+                                    <span class="text-[14px] font-bold text-navy dark:text-white">{{ $r->book->title ?? '-' }}</span>
+                                    <span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2] whitespace-nowrap">{{ $r->status === 'returned' && $r->returned_at ? $r->returned_at->diffForHumans() : $r->created_at->diffForHumans() }}</span>
+                                </div>
+                                <p class="text-[13px] text-[#45464E] dark:text-[#9AA7C2]">{{ $r->status === 'returned' ? 'Dikembalikan' : 'Dipinjam' }} • {{ $r->quantity }} eksemplar</p>
+                            </div>
+                        </div>
+                    @empty
+                        <p class="text-[13px] text-[#45464E] dark:text-[#9AA7C2]">Belum ada aktivitas.</p>
+                    @endforelse
+                </div>
+                <div class="mt-4 pt-3 text-center">
+                    <a class="inline-flex items-center gap-1 text-[13px] text-navy dark:text-white font-semibold hover:text-secondary" href="/member/history">
+                        <span>Buka Riwayat Lengkap</span><span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_outward</span>
+                    </a>
                 </div>
             </div>
         </div>
