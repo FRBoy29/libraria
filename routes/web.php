@@ -56,40 +56,55 @@ Route::middleware('admin.auth')->prefix('admin')->group(function () {
     Route::get('/books', BookManager::class);
     Route::get('/books/export', function () {
         $rows = \App\Models\Book::with('category')->orderBy('id')->get();
-        $name = 'katalog-buku-' . now()->format('Ymd') . '.csv';
 
-        return response()->streamDownload(function () use ($rows) {
-            $out = fopen('php://output', 'w');
-            fputcsv($out, ['ISBN', 'Judul', 'Penulis', 'Penerbit', 'Tahun', 'Kategori', 'Stok', 'Deskripsi']);
-            foreach ($rows as $b) {
-                fputcsv($out, [
-                    $b->isbn, $b->title, $b->author, $b->publisher, $b->publication_year,
-                    $b->category->name ?? '', $b->stock, $b->description,
-                ]);
-            }
-            fclose($out);
-        }, $name, ['Content-Type' => 'text/csv']);
+        $sheet = (new \PhpOffice\PhpSpreadsheet\Spreadsheet())->getActiveSheet();
+        $sheet->fromArray(
+            [['ISBN', 'Judul', 'Penulis', 'Penerbit', 'Tahun', 'Kategori', 'Stok', 'Deskripsi']],
+            null, 'A1', true
+        );
+        foreach ($rows as $i => $b) {
+            $sheet->fromArray([[
+                $b->isbn, $b->title, $b->author, $b->publisher, $b->publication_year,
+                $b->category->name ?? '', $b->stock, $b->description,
+            ]], null, 'A' . ($i + 2), true);
+        }
+        foreach (range('A', 'H') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        return response()->streamDownload(function () use ($sheet) {
+            (new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($sheet->getParent()))->save('php://output');
+        }, 'katalog-buku-' . now()->format('Ymd') . '.xlsx', [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
     });
     Route::get('/books/create', BookManager::class);
     Route::get('/books/{id}/edit', BookManager::class);
     Route::get('/members', MemberManager::class);
     Route::get('/members/export', function () {
-        $rows = \App\Models\Member::orderBy('id')->get([
-            'member_code', 'name', 'email', 'phone', 'address', 'status', 'active_until', 'created_at',
-        ]);
-        $name = 'anggota-libraria-' . now()->format('Ymd') . '.csv';
+        $rows = \App\Models\Member::orderBy('id')->get();
 
-        return response()->streamDownload(function () use ($rows) {
-            $out = fopen('php://output', 'w');
-            fputcsv($out, ['Member Code', 'Nama', 'Email', 'Telepon', 'Alamat', 'Status', 'Aktif Sampai', 'Terdaftar']);
-            foreach ($rows as $m) {
-                fputcsv($out, [
-                    $m->member_code, $m->name, $m->email, $m->phone, $m->address,
-                    $m->status, $m->active_until, $m->created_at,
-                ]);
-            }
-            fclose($out);
-        }, $name, ['Content-Type' => 'text/csv']);
+        $sheet = (new \PhpOffice\PhpSpreadsheet\Spreadsheet())->getActiveSheet();
+        $sheet->fromArray(
+            [['Member Code', 'Nama', 'Email', 'Telepon', 'Alamat', 'Status', 'Aktif Sampai', 'Terdaftar']],
+            null, 'A1', true
+        );
+        foreach ($rows as $i => $m) {
+            $sheet->fromArray([[
+                $m->member_code, $m->name, $m->email, $m->phone, $m->address,
+                $m->status, (string) $m->active_until,
+                $m->created_at ? $m->created_at->format('Y-m-d H:i') : '',
+            ]], null, 'A' . ($i + 2), true);
+        }
+        foreach (range('A', 'H') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        return response()->streamDownload(function () use ($sheet) {
+            (new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($sheet->getParent()))->save('php://output');
+        }, 'anggota-libraria-' . now()->format('Ymd') . '.xlsx', [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
     });
     Route::get('/members/create', MemberManager::class);
     Route::get('/members/{id}/edit', MemberManager::class);

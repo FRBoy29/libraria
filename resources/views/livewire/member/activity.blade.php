@@ -25,7 +25,7 @@
             <p class="text-[14px] text-[#45464E] dark:text-[#9AA7C2]">Pantau buku yang sedang kamu pinjam serta tinjau rekam jejak pengembalian bukumu.</p>
         </div>
         <button wire:click="export" type="button" class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-[#F0F3FF] dark:bg-[#1A2440] border border-line dark:border-[#263252] hover:bg-[#E7EEFF] dark:hover:bg-[#263252] text-[14px] font-medium self-start lg:self-auto">
-            <span class="material-symbols-outlined text-secondary dark:text-[#9CC2FF] text-[20px]" aria-hidden="true">file_download</span><span>Unduh Riwayat (CSV)</span>
+            <span class="material-symbols-outlined text-secondary dark:text-[#9CC2FF] text-[20px]" aria-hidden="true">file_download</span><span>Unduh Riwayat (PDF)</span>
         </button>
     </div>
 

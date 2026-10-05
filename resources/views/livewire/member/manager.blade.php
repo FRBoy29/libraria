@@ -11,7 +11,7 @@
         </div>
         <div class="flex items-center gap-2 self-start lg:self-auto">
             <a href="/admin/members/export" class="flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-white dark:bg-[#131B2E] border border-line dark:border-[#263252] text-[14px] font-medium hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440]">
-                <span class="material-symbols-outlined text-[18px] text-secondary" aria-hidden="true">file_download</span><span>Export Data</span>
+                <span class="material-symbols-outlined text-[18px] text-secondary" aria-hidden="true">file_download</span><span>Export Excel</span>
             </a>
             <button wire:click="openCreate" type="button" class="flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-secondary text-white text-[14px] font-medium hover:brightness-110">
                 <span class="material-symbols-outlined text-[20px]" aria-hidden="true">person_add</span><span>+ Tambah Anggota Baru</span>

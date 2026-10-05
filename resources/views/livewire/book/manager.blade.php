@@ -12,7 +12,7 @@
         </div>
         <div class="flex items-center gap-2 self-start lg:self-auto">
             <a href="/admin/books/export" class="flex items-center gap-2 px-4 h-11 rounded-lg bg-[#F0F3FF] dark:bg-[#1A2440] hover:bg-[#E7EEFF] dark:hover:bg-[#263252] text-[14px] font-medium">
-                <span class="material-symbols-outlined text-[19px]" aria-hidden="true">file_download</span><span>Ekspor / Cetak</span>
+                <span class="material-symbols-outlined text-[19px]" aria-hidden="true">file_download</span><span>Ekspor Excel</span>
             </a>
             <button wire:click="openCreate" type="button" class="flex items-center gap-2 px-5 h-11 rounded-lg bg-secondary text-white text-[14px] font-medium hover:brightness-110">
                 <span class="material-symbols-outlined text-[20px]" aria-hidden="true">add</span><span>Tambah Buku Baru</span>

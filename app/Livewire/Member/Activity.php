@@ -4,11 +4,9 @@ namespace App\Livewire\Member;
 
 use App\Models\Borrowing;
 use App\Models\BorrowingDetail;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class Activity extends Component
 {
@@ -41,28 +39,26 @@ class Activity extends Component
         $this->resetPage('historyPage');
     }
 
-    public function export(): StreamedResponse
+    public function export()
     {
         $member = Auth::guard('member')->user();
         $rows = $this->historyQuery($member->id)->limit(500)->get();
-        $name = 'riwayat-sirkulasi-' . $member->member_code . '-' . now()->format('Ymd') . '.csv';
+        $name = 'riwayat-sirkulasi-' . $member->member_code . '-' . now()->format('Ymd') . '.pdf';
 
-        return response()->streamDownload(function () use ($rows) {
-            $out = fopen('php://output', 'w');
-            fputcsv($out, ['Judul', 'Penulis', 'ISBN', 'Tanggal Pinjam', 'Jatuh Tempo', 'Tanggal Kembali', 'Status', 'Jumlah']);
-            foreach ($rows as $d) {
-                $returned = $d->returned_at ? Carbon::parse($d->returned_at)->toDateString() : '';
-                $due = $d->borrowing?->due_at;
-                $status = $returned !== '' && $due && $returned > $due
-                    ? 'Terlambat ' . Carbon::parse($due)->diffInDays($returned) . ' hari'
-                    : 'Tepat waktu';
-                fputcsv($out, [
-                    $d->book->title ?? '-', $d->book->author ?? '-', $d->book->isbn ?? '-',
-                    $d->borrowing?->borrowed_at, $due, $d->returned_at, $status, $d->quantity,
-                ]);
-            }
-            fclose($out);
-        }, $name, ['Content-Type' => 'text/csv']);
+        $pdf = new \Dompdf\Dompdf(['isRemoteEnabled' => false]);
+        $pdf->loadHtml(view('exports.member-history', [
+            'member' => $member,
+            'rows' => $rows,
+            'date' => now(),
+        ])->render());
+        $pdf->setPaper('A4', 'landscape');
+        $pdf->render();
+
+        return response()->streamDownload(
+            fn () => print($pdf->output()),
+            $name,
+            ['Content-Type' => 'application/pdf']
+        );
     }
 
     protected function historyQuery(int $memberId)
