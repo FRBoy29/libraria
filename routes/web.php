@@ -104,9 +104,10 @@ Route::middleware('member.auth')->prefix('member')->group(function () {
     Route::get('/dashboard', MemberDashboard::class);
     Route::get('/books', MemberCatalog::class);
     Route::get('/books/{id}', MemberBookDetail::class);
-    Route::get('/borrowings', MemberBorrowings::class);
-    Route::get('/history', MemberHistory::class);
+    Route::get('/activity', \App\Livewire\Member\Activity::class);
     Route::get('/profile', MemberProfile::class);
+    Route::redirect('/borrowings', '/member/activity');
+    Route::redirect('/history', '/member/activity');
 });
 
 // Referensi lama yang tidak dipakai lagi (dipertahankan agar tidak 404 bila di-bookmark)
