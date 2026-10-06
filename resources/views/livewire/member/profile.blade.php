@@ -1,117 +1,238 @@
 <div class="space-y-6" x-data="{ cardModal: false }">
-    <div>
-        <h1 class="font-poppins text-[24px] text-navy dark:text-white font-bold">Profil Pemustaka</h1>
-        <p class="text-[13px] text-[#45464E] dark:text-[#9AA7C2]">Kelola identitas, kata sandi, dan kartu anggota digital Anda.</p>
+    {{-- Header --}}
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div class="flex flex-col gap-1">
+            <div class="flex items-center gap-2">
+                <span class="text-[11px] text-secondary dark:text-[#9CC2FF] tracking-widest uppercase font-semibold">ID Akun &amp; Keanggotaan</span>
+                <span class="w-1.5 h-1.5 rounded-full bg-secondary dark:bg-[#9CC2FF]" aria-hidden="true"></span>
+                <span class="font-mono text-[12px] text-[#45464E] dark:text-[#9AA7C2]">{{ $member->member_code }}</span>
+            </div>
+            <h1 class="font-poppins text-[32px] leading-[40px] text-navy dark:text-white font-semibold tracking-tight">Profil Pemustaka</h1>
+            <p class="text-[14px] text-[#45464E] dark:text-[#9AA7C2] max-w-2xl">Kelola identitas, kata sandi, dan kartu anggota digital Anda dalam repositori terpadu Libraria.</p>
+        </div>
+        <div class="flex items-center gap-2">
+            <div class="px-3 py-1.5 rounded-full bg-[#F0F3FF] dark:bg-[#1A2440] border border-line dark:border-[#263252] flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-secondary dark:text-[#9CC2FF] text-[16px]" aria-hidden="true">verified</span>
+                <span class="text-[12px] text-navy dark:text-white font-medium">Anggota Terverifikasi</span>
+            </div>
+        </div>
     </div>
 
     @if (session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-800 px-4 py-2 rounded-lg text-[13px]">{{ session('success') }}</div>
+        <div x-data="{ show: true }" x-show="show" class="flex items-center justify-between p-4 bg-[#F0F3FF] dark:bg-[#1A2440] border border-line dark:border-[#263252] rounded-xl">
+            <div class="flex items-center gap-3">
+                <span class="w-8 h-8 rounded-full bg-success/15 text-success flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-[18px]" aria-hidden="true">check_circle</span></span>
+                <span class="text-[14px] text-navy dark:text-white font-medium">{{ session('success') }}</span>
+            </div>
+            <button type="button" @click="show = false" class="p-1.5 text-[#45464E] dark:text-[#9AA7C2] hover:text-navy dark:hover:text-white rounded-lg" aria-label="Tutup notifikasi"><span class="material-symbols-outlined text-[18px]" aria-hidden="true">close</span></button>
+        </div>
     @endif
 
-    {{-- Kartu Anggota Digital --}}
-    <div class="bg-white dark:bg-[#131B2E] rounded-xl p-6 border border-line dark:border-[#263252]">
-        <div class="flex items-center justify-between pb-2">
-            <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-secondary text-[22px]" aria-hidden="true">badge</span>
-                <h2 class="font-poppins text-[16px] text-navy dark:text-white font-bold">Kartu Anggota Digital</h2>
-            </div>
-            <span class="px-2 py-0.5 rounded-full text-[11px] {{ $member->status === 'active' ? 'bg-success/15 text-success' : 'bg-errorbox text-error' }} font-semibold">{{ ucfirst($member->status) }}</span>
-        </div>
-        <p class="text-[13px] text-[#45464E] dark:text-[#9AA7C2] pb-2">Tunjukkan kepada petugas saat peminjaman/pengembalian.</p>
-        <div class="pt-2">
-            <div class="p-5 rounded-2xl text-white" style="background: linear-gradient(135deg, #1c2547 0%, #101a33 100%);">
+    {{-- Kartu + ringkasan --}}
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        <div class="lg:col-span-7 flex flex-col justify-between p-6 rounded-xl bg-gradient-to-br from-[#DEE8FF] dark:from-[#222A3D] via-[#F0F3FF] dark:via-[#171f33] to-[#F8FAFC] dark:to-[#131B2E] border border-line dark:border-[#263252] relative overflow-hidden">
+            <div class="absolute -right-20 -top-20 w-64 h-64 bg-brand/10 rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
+            <div class="absolute -left-12 -bottom-12 w-48 h-48 bg-gold/10 rounded-full blur-2xl pointer-events-none" aria-hidden="true"></div>
+            <div class="relative z-10 flex flex-col gap-4">
                 <div class="flex items-start justify-between">
                     <div class="flex items-center gap-2.5">
-                        <img src="{{ asset('assets/logo/libraria-mark.svg') }}" alt="Logo LIBRARIA" class="w-9 h-9">
-                        <div class="flex flex-col leading-tight">
-                            <span class="font-poppins font-bold text-[17px] tracking-wide">LIBRARIA</span>
-                            <span class="text-[10px] tracking-[0.22em] text-white/50 font-medium">KARTU ANGGOTA</span>
+                        <span class="w-10 h-10 rounded-lg bg-white dark:bg-[#0B1326] flex items-center justify-center text-brand dark:text-[#9CC2FF] shadow-sm"><span class="material-symbols-outlined text-[20px]" aria-hidden="true">badge</span></span>
+                        <div>
+                            <span class="block text-[11px] text-[#8A5A1D] dark:text-[#e3c290] uppercase tracking-wider">Identitas Pemustaka Digital</span>
+                            <h2 class="font-poppins text-[20px] text-navy dark:text-white font-semibold">Kartu Anggota Digital</h2>
                         </div>
                     </div>
-                    <span class="w-2.5 h-2.5 rounded-full mt-1 {{ $member->status === 'active' ? 'bg-success' : 'bg-danger' }}" aria-label="Status {{ $member->status }}"></span>
+                    <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full {{ $member->status === 'active' ? 'bg-success/15 text-success' : 'bg-errorbox dark:bg-[#BA1A1A]/20 text-error dark:text-[#FFB4AB]' }} text-[11px] font-semibold uppercase tracking-wider">
+                        <span class="w-1.5 h-1.5 rounded-full {{ $member->status === 'active' ? 'bg-success animate-pulse' : 'bg-error' }}" aria-hidden="true"></span>{{ ucfirst($member->status) }}
+                    </span>
                 </div>
-                <div class="flex items-center gap-4 mt-5">
-                    <span class="w-14 h-14 rounded-lg bg-[#9aa0b0] text-[#1a2340] flex items-center justify-center font-poppins font-bold text-[26px] shrink-0" aria-hidden="true">{{ strtoupper(substr($member->name, 0, 1)) }}</span>
-                    <div class="flex flex-col min-w-0">
-                        <span class="font-poppins font-bold text-[19px] truncate">{{ $member->name }}</span>
-                        <span class="font-mono text-[12px] text-white/55">{{ $member->member_code }}</span>
-                        <span class="text-[12px] text-white/55 truncate">{{ $member->email }}</span>
+                <div class="p-5 rounded-xl bg-white dark:bg-[#0B1326] relative overflow-hidden shadow-xl">
+                    <span class="material-symbols-outlined absolute top-3 right-4 text-[64px] text-navy dark:text-white opacity-5 pointer-events-none" aria-hidden="true">account_balance</span>
+                    <div class="flex flex-col gap-4 relative z-10">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-1.5">
+                                <span class="font-poppins text-[20px] font-semibold tracking-tight text-navy dark:text-white">LIBRARIA</span>
+                            </div>
+                            <span class="font-mono text-[12px] text-secondary dark:text-[#9CC2FF] font-medium tracking-widest">{{ $member->member_code }}</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="w-16 h-16 rounded-xl overflow-hidden bg-navy text-white flex items-center justify-center flex-shrink-0 font-poppins font-bold text-[26px]" aria-hidden="true">{{ strtoupper(substr($member->name, 0, 1)) }}</span>
+                            <div class="flex flex-col min-w-0">
+                                <span class="font-poppins text-[20px] text-navy dark:text-white font-semibold truncate">{{ $member->name }}</span>
+                                <span class="text-[13px] text-[#45464E] dark:text-[#9AA7C2] truncate">{{ $member->email }}</span>
+                                <span class="font-mono text-[12px] text-brand dark:text-[#9CC2FF] pt-1">{{ $member->member_code }}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="flex items-center gap-1.5 text-[11px] text-[#45464E] dark:text-[#9AA7C2] uppercase"><span class="material-symbols-outlined text-[14px]" aria-hidden="true">schedule</span>Masa Berlaku: <span class="text-navy dark:text-white font-medium normal-case">{{ $member->active_until ? \Carbon\Carbon::parse($member->active_until)->format('d M Y') : '—' }}</span></span>
+                            <span class="font-mono text-[11px] text-[#8A5A1D] dark:text-[#e3c290] tracking-widest">LIBRARIA</span>
+                        </div>
                     </div>
-                </div>
-                <div class="border-t border-white/10 mt-5 pt-3 flex items-end justify-between">
-                    <div class="flex flex-col">
-                        <span class="text-[10px] tracking-[0.2em] text-white/50 font-medium">MASA AKTIF</span>
-                        <span class="font-poppins font-bold text-[15px] mt-0.5">{{ $member->active_until ? \Carbon\Carbon::parse($member->active_until)->format('d M Y') : '—' }}</span>
-                    </div>
-                    <span class="px-3 py-1 rounded-full text-[11px] font-semibold {{ $member->status === 'active' ? 'bg-success/25 text-[#4ade80]' : 'bg-danger/25 text-[#f87171]' }}">{{ ucfirst($member->status) }}</span>
                 </div>
             </div>
-            <button type="button" @click="cardModal = true" class="w-full mt-4 py-2.5 px-4 rounded-lg bg-[#D8E3FB] dark:bg-[#2d3449] hover:bg-[#DEE8FF] dark:hover:bg-[#3b465e] text-navy dark:text-white text-[12px] font-semibold flex items-center justify-center gap-2 transition-all">
-                <span class="material-symbols-outlined text-[20px] text-brand dark:text-[#9CC2FF]" aria-hidden="true">qr_code_scanner</span>
-                <span>Tampilkan Kartu Anggota</span>
-            </button>
+            <p class="text-[13px] text-[#45464E] dark:text-[#9AA7C2]">Tunjukkan kartu ini kepada petugas saat peminjaman atau pengembalian buku fisik.</p>
+            <div class="pt-3 flex flex-wrap items-center gap-2">
+                <button type="button" @click="cardModal = true" class="flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-brand dark:bg-[#508ff8] text-white dark:text-[#002f68] text-[14px] font-medium hover:brightness-110 transition-all">
+                    <span class="material-symbols-outlined text-[18px]" aria-hidden="true">qr_code_scanner</span><span>Tampilkan Kartu Anggota</span>
+                </button>
+                <button wire:click="downloadCard" type="button" class="flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-[#F0F3FF] dark:bg-[#1A2440] border border-line dark:border-[#263252] hover:bg-[#E7EEFF] dark:hover:bg-[#263252] text-[14px] font-medium transition-colors">
+                    <span class="material-symbols-outlined text-[18px]" aria-hidden="true">download</span><span>Unduh Format PDF</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="lg:col-span-5 flex flex-col gap-4">
+            <div class="p-5 rounded-xl bg-[#F0F3FF] dark:bg-[#1A2440] border border-line dark:border-[#263252] flex flex-col justify-between gap-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] text-[#8A5A1D] dark:text-[#e3c290] uppercase tracking-wider">Aktivitas Pemustaka</span>
+                    <a href="/member/activity" class="text-[11px] text-brand dark:text-[#9CC2FF] font-semibold hover:underline">Lihat aktivitas</a>
+                </div>
+                <div class="grid grid-cols-3 gap-2 text-center">
+                    <div class="p-3 rounded-lg bg-white dark:bg-[#0B1326] border border-line dark:border-[#263252]">
+                        <p class="font-poppins text-[22px] font-bold text-navy dark:text-white">{{ $activeQty }}</p>
+                        <p class="text-[11px] text-[#45464E] dark:text-[#9AA7C2]">Dipinjam</p>
+                    </div>
+                    <div class="p-3 rounded-lg bg-white dark:bg-[#0B1326] border border-line dark:border-[#263252]">
+                        <p class="font-poppins text-[22px] font-bold text-navy dark:text-white">{{ $historyQty }}</p>
+                        <p class="text-[11px] text-[#45464E] dark:text-[#9AA7C2]">Selesai</p>
+                    </div>
+                    <div class="p-3 rounded-lg bg-white dark:bg-[#0B1326] border border-line dark:border-[#263252]">
+                        <p class="font-poppins text-[22px] font-bold {{ $overdueCount > 0 ? 'text-error dark:text-[#FFB4AB]' : 'text-navy dark:text-white' }}">{{ $overdueCount }}</p>
+                        <p class="text-[11px] text-[#45464E] dark:text-[#9AA7C2]">Terlambat</p>
+                    </div>
+                </div>
+                <a href="/member/books" class="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-lg bg-brand dark:bg-[#508ff8] text-white dark:text-[#002f68] text-[13px] font-semibold hover:brightness-110 transition-all">
+                    <span class="material-symbols-outlined text-[18px]" aria-hidden="true">search</span>Jelajahi Katalog
+                </a>
+            </div>
+            <div class="p-4 rounded-lg bg-[#F0F3FF] dark:bg-[#1A2440] border border-line dark:border-[#263252] flex items-start gap-2.5">
+                <span class="material-symbols-outlined text-[20px] text-[#8A5A1D] dark:text-[#e3c290] shrink-0" aria-hidden="true">info</span>
+                <p class="text-[13px] text-[#45464E] dark:text-[#9AA7C2] leading-relaxed">Peminjaman dan pengembalian buku diproses oleh petugas pada jam layanan <strong>08:00 – 17:00 WIB</strong>.</p>
+            </div>
         </div>
     </div>
 
-    {{-- Info singkat keanggotaan --}}
-    <div class="bg-white dark:bg-[#131B2E] rounded-xl p-6 border border-line dark:border-[#263252] grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div>
-            <p class="text-[12px] text-[#45464E] dark:text-[#9AA7C2] font-semibold uppercase tracking-wider">Member ID</p>
-            <p class="font-poppins font-bold text-navy dark:text-white mt-1">{{ $member->member_code }}</p>
+    {{-- Strip info --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="p-4 rounded-xl bg-[#F0F3FF] dark:bg-[#1A2440] border border-line dark:border-[#263252] flex items-center gap-3">
+            <span class="w-12 h-12 rounded-lg bg-white dark:bg-[#0B1326] flex items-center justify-center text-brand dark:text-[#9CC2FF] shrink-0"><span class="material-symbols-outlined text-[20px]" aria-hidden="true">pin</span></span>
+            <div class="flex flex-col min-w-0">
+                <span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2] uppercase tracking-wider">Member ID</span>
+                <span class="font-mono text-[13px] text-navy dark:text-white font-medium truncate">{{ $member->member_code }}</span>
+            </div>
         </div>
-        <div>
-            <p class="text-[12px] text-[#45464E] dark:text-[#9AA7C2] font-semibold uppercase tracking-wider">Nama</p>
-            <p class="font-poppins font-bold text-navy dark:text-white mt-1">{{ $member->name }}</p>
+        <div class="p-4 rounded-xl bg-[#F0F3FF] dark:bg-[#1A2440] border border-line dark:border-[#263252] flex items-center gap-3">
+            <span class="w-12 h-12 rounded-lg bg-white dark:bg-[#0B1326] flex items-center justify-center text-[#8A5A1D] dark:text-[#e3c290] shrink-0"><span class="material-symbols-outlined text-[20px]" aria-hidden="true">person</span></span>
+            <div class="flex flex-col min-w-0">
+                <span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2] uppercase tracking-wider">Nama Lengkap</span>
+                <span class="text-[14px] text-navy dark:text-white font-medium truncate">{{ $member->name }}</span>
+            </div>
         </div>
-        <div>
-            <p class="text-[12px] text-[#45464E] dark:text-[#9AA7C2] font-semibold uppercase tracking-wider">Status</p>
-            <p class="font-poppins font-bold {{ $member->status === 'active' ? 'text-success' : 'text-error' }} mt-1">{{ ucfirst($member->status) }}</p>
+        <div class="p-4 rounded-xl bg-[#F0F3FF] dark:bg-[#1A2440] border border-line dark:border-[#263252] flex items-center gap-3">
+            <span class="w-12 h-12 rounded-lg bg-white dark:bg-[#0B1326] flex items-center justify-center text-brand dark:text-[#9CC2FF] shrink-0"><span class="material-symbols-outlined text-[20px]" aria-hidden="true">check_box</span></span>
+            <div class="flex flex-col min-w-0">
+                <span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2] uppercase tracking-wider">Status Akun</span>
+                <span class="flex items-center gap-1.5 text-[14px] text-brand dark:text-[#9CC2FF] font-medium"><span class="w-2 h-2 rounded-full {{ $member->status === 'active' ? 'bg-success' : 'bg-error' }}" aria-hidden="true"></span>{{ $member->status === 'active' ? 'Aktif Penuh' : ucfirst($member->status) }}</span>
+            </div>
         </div>
-        <div>
-            <p class="text-[12px] text-[#45464E] dark:text-[#9AA7C2] font-semibold uppercase tracking-wider">Masa Aktif</p>
-            <p class="font-poppins font-bold text-navy dark:text-white mt-1">{{ $member->active_until ? \Carbon\Carbon::parse($member->active_until)->format('d M Y') : '—' }}</p>
+        <div class="p-4 rounded-xl bg-[#F0F3FF] dark:bg-[#1A2440] border border-line dark:border-[#263252] flex items-center gap-3">
+            <span class="w-12 h-12 rounded-lg bg-white dark:bg-[#0B1326] flex items-center justify-center text-[#8A5A1D] dark:text-[#e3c290] shrink-0"><span class="material-symbols-outlined text-[20px]" aria-hidden="true">event_available</span></span>
+            <div class="flex flex-col min-w-0">
+                <span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2] uppercase tracking-wider">Masa Aktif</span>
+                <span class="font-mono text-[13px] text-navy dark:text-white font-medium truncate">{{ $member->active_until ? \Carbon\Carbon::parse($member->active_until)->format('d M Y') : '—' }}</span>
+            </div>
         </div>
     </div>
 
     {{-- Form & Password --}}
-    <div class="grid md:grid-cols-2 gap-6">
-        <div class="bg-white dark:bg-[#131B2E] rounded-xl p-6 border border-line dark:border-[#263252]">
-            <h2 class="font-poppins text-[16px] text-navy dark:text-white font-bold mb-4">Data Pribadi</h2>
-            <form wire:submit="saveProfile" class="space-y-3">
-                <div>
-                    <label class="text-[12px] text-[#45464E] dark:text-[#9AA7C2] font-semibold">Email</label>
-                    <input wire:model="email" type="email" class="w-full mt-1 h-10 px-3 rounded-lg bg-canvas dark:bg-[#0B1326] border border-line dark:border-[#263252] text-[13px] text-navy dark:text-[#DAE2FD] focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/15" placeholder="Email">
-                    @error('email')<p class="text-error dark:text-[#FFB4AB] text-[12px] mt-1">{{ $message }}</p>@enderror
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start" x-data="{ showCurrent: false, showNew: false, showConfirm: false }">
+        <div class="p-6 rounded-xl bg-[#F0F3FF] dark:bg-[#1A2440] border border-line dark:border-[#263252] flex flex-col gap-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-brand dark:text-[#9CC2FF] text-[20px]" aria-hidden="true">badge</span>
+                    <h2 class="font-poppins text-[20px] text-navy dark:text-white font-semibold">Data Pribadi</h2>
                 </div>
-                <div>
-                    <label class="text-[12px] text-[#45464E] dark:text-[#9AA7C2] font-semibold">Nomor HP</label>
-                    <input wire:model="phone" class="w-full mt-1 h-10 px-3 rounded-lg bg-canvas dark:bg-[#0B1326] border border-line dark:border-[#263252] text-[13px] text-navy dark:text-[#DAE2FD] focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/15" placeholder="Nomor HP">
+                <span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2] uppercase">Sirkulasi Umum</span>
+            </div>
+            <p class="text-[13px] text-[#45464E] dark:text-[#9AA7C2]">Perbarui informasi kontak agar staf dapat mengabarkan ketersediaan buku dan pengingat tanggal jatuh tempo.</p>
+            <form wire:submit="saveProfile" class="flex flex-col gap-4">
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-[12px] text-navy dark:text-white uppercase tracking-wider font-medium" for="email">Alamat Surel (Email)</label>
+                    <div class="relative flex items-center">
+                        <span class="material-symbols-outlined absolute left-3.5 text-[#45464E] dark:text-[#9AA7C2] text-[18px] pointer-events-none" aria-hidden="true">mail</span>
+                        <input wire:model="email" type="email" id="email" class="w-full bg-white dark:bg-[#0B1326] border border-line dark:border-[#263252] text-[14px] text-navy dark:text-[#DAE2FD] pl-10 pr-3 h-11 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/20">
+                    </div>
+                    @error('email')<p class="text-error dark:text-[#FFB4AB] text-[12px]">{{ $message }}</p>@enderror
                 </div>
-                <div>
-                    <label class="text-[12px] text-[#45464E] dark:text-[#9AA7C2] font-semibold">Alamat</label>
-                    <textarea wire:model="address" rows="2" class="w-full mt-1 px-3 py-2 rounded-lg bg-canvas dark:bg-[#0B1326] border border-line dark:border-[#263252] text-[13px] text-navy dark:text-[#DAE2FD] focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/15" placeholder="Alamat"></textarea>
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-[12px] text-navy dark:text-white uppercase tracking-wider font-medium" for="phone">Nomor Handphone / WhatsApp</label>
+                    <div class="relative flex items-center">
+                        <span class="material-symbols-outlined absolute left-3.5 text-[#45464E] dark:text-[#9AA7C2] text-[18px] pointer-events-none" aria-hidden="true">call</span>
+                        <input wire:model="phone" type="tel" id="phone" class="w-full bg-white dark:bg-[#0B1326] border border-line dark:border-[#263252] text-[14px] text-navy dark:text-[#DAE2FD] pl-10 pr-3 h-11 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/20">
+                    </div>
                 </div>
-                <button class="w-full h-10 rounded-lg bg-brand dark:bg-[#508ff8] text-white dark:text-[#002f68] text-[13px] font-semibold hover:brightness-110 transition">Simpan Perubahan</button>
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-[12px] text-navy dark:text-white uppercase tracking-wider font-medium" for="address">Alamat Domisili Tetap</label>
+                    <div class="relative flex">
+                        <span class="material-symbols-outlined absolute left-3.5 top-3 text-[#45464E] dark:text-[#9AA7C2] text-[18px] pointer-events-none" aria-hidden="true">home</span>
+                        <textarea wire:model="address" id="address" rows="3" class="w-full bg-white dark:bg-[#0B1326] border border-line dark:border-[#263252] text-[14px] text-navy dark:text-[#DAE2FD] pl-10 pr-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/20 resize-none"></textarea>
+                    </div>
+                </div>
+                <div class="flex justify-end">
+                    <button class="flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-brand dark:bg-[#508ff8] text-white dark:text-[#002f68] text-[14px] font-medium hover:brightness-110 transition-all">
+                        <span class="material-symbols-outlined text-[18px]" aria-hidden="true">save</span><span>Simpan Perubahan</span>
+                    </button>
+                </div>
             </form>
         </div>
-        <div class="bg-white dark:bg-[#131B2E] rounded-xl p-6 border border-line dark:border-[#263252]">
-            <h2 class="font-poppins text-[16px] text-navy dark:text-white font-bold mb-4">Ganti Password</h2>
-            <form wire:submit="changePassword" class="space-y-3">
-                <div>
-                    <label class="text-[12px] text-[#45464E] dark:text-[#9AA7C2] font-semibold">Password Saat Ini</label>
-                    <input wire:model="current_password" type="password" class="w-full mt-1 h-10 px-3 rounded-lg bg-canvas dark:bg-[#0B1326] border border-line dark:border-[#263252] text-[13px] text-navy dark:text-[#DAE2FD] focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/15" placeholder="Password saat ini">
-                    @error('current_password')<p class="text-error dark:text-[#FFB4AB] text-[12px] mt-1">{{ $message }}</p>@enderror
+
+        <div class="p-6 rounded-xl bg-[#F0F3FF] dark:bg-[#1A2440] border border-line dark:border-[#263252] flex flex-col gap-4" x-data="{ score: 0, label: '' }">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[#8A5A1D] dark:text-[#e3c290] text-[20px]" aria-hidden="true">lock_reset</span>
+                    <h2 class="font-poppins text-[20px] text-navy dark:text-white font-semibold">Ganti Password</h2>
                 </div>
-                <div>
-                    <label class="text-[12px] text-[#45464E] dark:text-[#9AA7C2] font-semibold">Password Baru</label>
-                    <input wire:model="new_password" type="password" class="w-full mt-1 h-10 px-3 rounded-lg bg-canvas dark:bg-[#0B1326] border border-line dark:border-[#263252] text-[13px] text-navy dark:text-[#DAE2FD] focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/15" placeholder="Password baru">
-                    @error('new_password')<p class="text-error dark:text-[#FFB4AB] text-[12px] mt-1">{{ $message }}</p>@enderror
+                <span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2] uppercase">Autentikasi</span>
+            </div>
+            <p class="text-[13px] text-[#45464E] dark:text-[#9AA7C2]">Gunakan kombinasi minimal 8 karakter dengan huruf kapital, angka, dan simbol untuk mengamankan akses katalog Anda.</p>
+            <form wire:submit="changePassword" class="flex flex-col gap-4">
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-[12px] text-navy dark:text-white uppercase tracking-wider font-medium" for="current_password">Password Saat Ini</label>
+                    <div class="relative flex items-center">
+                        <span class="material-symbols-outlined absolute left-3.5 text-[#45464E] dark:text-[#9AA7C2] text-[18px] pointer-events-none" aria-hidden="true">key</span>
+                        <input wire:model="current_password" :type="showCurrent ? 'text' : 'password'" id="current_password" placeholder="••••••••" class="w-full bg-white dark:bg-[#0B1326] border border-line dark:border-[#263252] placeholder-[#75777F] dark:placeholder-[#8c909e] text-[14px] text-navy dark:text-[#DAE2FD] pl-10 pr-10 h-11 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/20">
+                        <button type="button" @click="showCurrent = !showCurrent" class="absolute right-3 text-[#45464E] dark:text-[#9AA7C2] hover:text-navy dark:hover:text-white" aria-label="Tampilkan atau sembunyikan password"><span class="material-symbols-outlined text-[18px]" x-text="showCurrent ? 'visibility_off' : 'visibility'" aria-hidden="true">visibility</span></button>
+                    </div>
+                    @error('current_password')<p class="text-error dark:text-[#FFB4AB] text-[12px]">{{ $message }}</p>@enderror
                 </div>
-                <div>
-                    <label class="text-[12px] text-[#45464E] dark:text-[#9AA7C2] font-semibold">Konfirmasi Password Baru</label>
-                    <input wire:model="new_password_confirmation" type="password" class="w-full mt-1 h-10 px-3 rounded-lg bg-canvas dark:bg-[#0B1326] border border-line dark:border-[#263252] text-[13px] text-navy dark:text-[#DAE2FD] focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/15" placeholder="Konfirmasi password baru">
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-[12px] text-navy dark:text-white uppercase tracking-wider font-medium" for="new_password">Password Baru</label>
+                    <div class="relative flex items-center">
+                        <span class="material-symbols-outlined absolute left-3.5 text-[#45464E] dark:text-[#9AA7C2] text-[18px] pointer-events-none" aria-hidden="true">lock</span>
+                        <input wire:model="new_password" :type="showNew ? 'text' : 'password'" id="new_password" placeholder="Minimal 8 karakter" class="w-full bg-white dark:bg-[#0B1326] border border-line dark:border-[#263252] placeholder-[#75777F] dark:placeholder-[#8c909e] text-[14px] text-navy dark:text-[#DAE2FD] pl-10 pr-10 h-11 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/20" @input="score = $event.target.value.length === 0 ? 0 : ($event.target.value.length < 8 ? 1 : (/[A-Z]/.test($event.target.value) && /[0-9]/.test($event.target.value) ? 4 : 2)); label = ['Kosong', 'Lemah', 'Cukup', '', 'Kuat'][score] ?? ''">
+                        <button type="button" @click="showNew = !showNew" class="absolute right-3 text-[#45464E] dark:text-[#9AA7C2] hover:text-navy dark:hover:text-white" aria-label="Tampilkan atau sembunyikan password"><span class="material-symbols-outlined text-[18px]" x-text="showNew ? 'visibility_off' : 'visibility'" aria-hidden="true">visibility</span></button>
+                    </div>
+                    <div class="flex items-center gap-1.5 pt-1">
+                        <template x-for="i in [1,2,3,4]" :key="i">
+                            <div class="h-1 flex-1 rounded-full transition-colors" :class="score >= i ? (score >= 4 ? 'bg-brand dark:bg-[#508ff8]' : (score >= 2 ? 'bg-gold' : 'bg-error')) : 'bg-[#D8E3FB] dark:bg-[#2d3449]'"></div>
+                        </template>
+                        <span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2] ml-1" x-text="label"></span>
+                    </div>
+                    @error('new_password')<p class="text-error dark:text-[#FFB4AB] text-[12px]">{{ $message }}</p>@enderror
                 </div>
-                <button class="w-full h-10 rounded-lg bg-navy dark:bg-brand text-white text-[13px] font-semibold hover:brightness-110 transition">Ganti Password</button>
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-[12px] text-navy dark:text-white uppercase tracking-wider font-medium" for="new_password_confirmation">Konfirmasi Password Baru</label>
+                    <div class="relative flex items-center">
+                        <span class="material-symbols-outlined absolute left-3.5 text-[#45464E] dark:text-[#9AA7C2] text-[18px] pointer-events-none" aria-hidden="true">done_all</span>
+                        <input wire:model="new_password_confirmation" :type="showConfirm ? 'text' : 'password'" id="new_password_confirmation" placeholder="Ulangi password baru" class="w-full bg-white dark:bg-[#0B1326] border border-line dark:border-[#263252] placeholder-[#75777F] dark:placeholder-[#8c909e] text-[14px] text-navy dark:text-[#DAE2FD] pl-10 pr-10 h-11 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/20">
+                        <button type="button" @click="showConfirm = !showConfirm" class="absolute right-3 text-[#45464E] dark:text-[#9AA7C2] hover:text-navy dark:hover:text-white" aria-label="Tampilkan atau sembunyikan password"><span class="material-symbols-outlined text-[18px]" x-text="showConfirm ? 'visibility_off' : 'visibility'" aria-hidden="true">visibility</span></button>
+                    </div>
+                </div>
+                <div class="flex justify-end">
+                    <button class="flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-[#F0F3FF] dark:bg-[#060e20] border border-line dark:border-[#263252] hover:bg-[#E7EEFF] dark:hover:bg-[#222A3D] text-[14px] font-medium transition-colors">
+                        <span class="material-symbols-outlined text-[18px]" aria-hidden="true">shield</span><span>Ganti Password</span>
+                    </button>
+                </div>
             </form>
         </div>
     </div>

@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Member;
 
-use App\Models\Borrowing;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
@@ -50,7 +49,7 @@ class Profile extends Component
     {
         $this->validate([
             'current_password' => 'required',
-            'new_password' => 'required|min:6|confirmed',
+            'new_password' => 'required|min:8|confirmed',
         ]);
 
         $member = Auth::guard('member')->user();
@@ -68,16 +67,37 @@ class Profile extends Component
 
     public function render()
     {
-        return view('livewire.member.profile', [
-            'member' => Auth::guard('member')->user(),
-        ])->layout('layouts.member', ['nav' => 'profile', 'overdueCount' => $this->overdueCount()]);
-    }
-
-    private function overdueCount(): int
-    {
-        return Borrowing::where('member_id', Auth::guard('member')->id())
+        $memberId = Auth::guard('member')->id();
+        $borrowingIds = \App\Models\Borrowing::where('member_id', $memberId)->pluck('id');
+        $overdueCount = \App\Models\Borrowing::where('member_id', $memberId)
             ->where('status', 'borrowed')
             ->whereDate('due_at', '<', now()->toDateString())
             ->count();
+
+        return view('livewire.member.profile', [
+            'member' => Auth::guard('member')->user(),
+            'activeQty' => (int) \App\Models\BorrowingDetail::whereIn('borrowing_id', $borrowingIds)->where('status', 'borrowed')->sum('quantity'),
+            'historyQty' => (int) \App\Models\BorrowingDetail::whereIn('borrowing_id', $borrowingIds)->where('status', 'returned')->sum('quantity'),
+            'overdueCount' => $overdueCount,
+        ])->layout('layouts.member', ['nav' => 'profile', 'overdueCount' => $overdueCount]);
+    }
+
+    public function downloadCard()
+    {
+        $member = Auth::guard('member')->user();
+
+        $pdf = new \Dompdf\Dompdf(['isRemoteEnabled' => false]);
+        $pdf->loadHtml(view('exports.member-card', [
+            'member' => $member,
+            'date' => now(),
+        ])->render());
+        $pdf->setPaper('A4', 'portrait');
+        $pdf->render();
+
+        return response()->streamDownload(
+            fn () => print($pdf->output()),
+            'kartu-anggota-' . $member->member_code . '.pdf',
+            ['Content-Type' => 'application/pdf']
+        );
     }
 }
