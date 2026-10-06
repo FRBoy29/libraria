@@ -24,7 +24,7 @@ class Index extends Component
 
     public string $category_id = '';
 
-    public string $tab = 'borrowing';
+    public string $tab = 'circulation';
 
     public function clearFilters(): void
     {
@@ -85,21 +85,15 @@ class Index extends Component
             }
         };
 
-        $fill('Peminjaman', ['ID', 'Anggota', 'Member Code', 'Buku', 'Tgl Pinjam', 'Jatuh Tempo', 'Status'],
+        $fill('Sirkulasi', ['ID', 'Anggota', 'Member Code', 'Buku', 'Tgl Pinjam', 'Jatuh Tempo', 'Tgl Kembali', 'Status'],
             $this->borrowQuery()->limit(500)->get(),
             fn ($b) => [
                 $b->id, $b->member->name ?? '', $b->member->member_code ?? '',
                 $b->details->map(fn ($d) => ($d->book->title ?? '') . ' x' . $d->quantity)->implode('; '),
-                (string) $b->borrowed_at, (string) $b->due_at, $b->status,
-            ], 'G');
-
-        $fill('Pengembalian', ['Judul', 'Penulis', 'Anggota', 'Qty', 'Tgl Kembali'],
-            $this->returnQuery()->limit(500)->get(),
-            fn ($d) => [
-                $d->book->title ?? '', $d->book->author ?? '',
-                $d->borrowing->member->name ?? '', $d->quantity,
-                $d->returned_at ? (string) $d->returned_at : '',
-            ], 'E');
+                (string) $b->borrowed_at, (string) $b->due_at,
+                $b->details->max('returned_at') ? (string) $b->details->max('returned_at') : '',
+                $b->status,
+            ], 'H');
 
         $fill('Buku', ['ISBN', 'Judul', 'Penulis', 'Penerbit', 'Tahun', 'Kategori', 'Stok'],
             $this->booksQuery()->limit(500)->get(),

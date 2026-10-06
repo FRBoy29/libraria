@@ -92,7 +92,7 @@
 
     {{-- Tabs --}}
     <div class="flex items-center gap-1 bg-white dark:bg-[#131B2E] border border-line dark:border-[#263252] p-1.5 rounded-xl w-fit max-w-full overflow-x-auto">
-        @foreach(['borrowing' => 'Laporan Peminjaman', 'returning' => 'Laporan Pengembalian', 'books' => 'Laporan Buku', 'members' => 'Laporan Anggota'] as $val => $label)
+        @foreach(['circulation' => 'Laporan Sirkulasi', 'books' => 'Laporan Buku', 'members' => 'Laporan Anggota'] as $val => $label)
             <button wire:click="$set('tab', '{{ $val }}')" type="button" class="px-3.5 py-2 rounded-lg text-[13px] font-semibold whitespace-nowrap transition-all {{ $tab === $val ? 'bg-secondary text-white shadow-sm' : 'text-[#45464E] dark:text-[#9AA7C2] hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440]' }}">{{ $label }}</button>
         @endforeach
     </div>
@@ -100,10 +100,10 @@
     {{-- Tables --}}
     <div class="rounded-xl bg-white dark:bg-[#131B2E] border border-line dark:border-[#263252] overflow-hidden">
         <div class="overflow-x-auto">
-            @if($tab === 'borrowing')
+            @if($tab === 'circulation')
                 <table class="w-full text-left">
                     <thead class="bg-[#F0F3FF] dark:bg-[#0B1326] text-[#45464E] dark:text-[#9AA7C2] text-[12px] uppercase tracking-wider border-b border-line dark:border-[#263252]">
-                        <tr><th class="py-3.5 px-4 w-16">ID</th><th class="py-3.5 px-4">Anggota</th><th class="py-3.5 px-4 min-w-[200px]">Buku</th><th class="py-3.5 px-4">Tanggal Pinjam</th><th class="py-3.5 px-4">Jatuh Tempo</th><th class="py-3.5 px-4">Status</th></tr>
+                        <tr><th class="py-3.5 px-4 w-16">ID</th><th class="py-3.5 px-4">Anggota</th><th class="py-3.5 px-4 min-w-[200px]">Buku</th><th class="py-3.5 px-4">Tanggal Pinjam</th><th class="py-3.5 px-4">Jatuh Tempo</th><th class="py-3.5 px-4">Tanggal Kembali</th><th class="py-3.5 px-4">Status</th></tr>
                     </thead>
                     <tbody class="text-[14px]">
                         @forelse($borrowings as $b)
@@ -113,6 +113,7 @@
                                 <td class="py-3.5 px-4">@foreach($b->details as $d)<span class="block truncate">{{ $d->book->title ?? '-' }} ×{{ $d->quantity }}</span>@endforeach</td>
                                 <td class="py-3.5 px-4 whitespace-nowrap text-[#45464E] dark:text-[#9AA7C2]">{{ \Carbon\Carbon::parse($b->borrowed_at)->format('d M Y') }}</td>
                                 <td class="py-3.5 px-4 whitespace-nowrap text-[#45464E] dark:text-[#9AA7C2]">{{ \Carbon\Carbon::parse($b->due_at)->format('d M Y') }}</td>
+                                <td class="py-3.5 px-4 whitespace-nowrap text-[#45464E] dark:text-[#9AA7C2]">{{ $b->details->max('returned_at') ? \Carbon\Carbon::parse($b->details->max('returned_at'))->format('d M Y H:i') : '—' }}</td>
                                 <td class="py-3.5 px-4 whitespace-nowrap">
                                     @if($b->status === 'returned')
                                         <span class="px-2.5 py-1 rounded-md bg-success/15 text-success text-[12px] font-medium">Dikembalikan</span>
@@ -124,25 +125,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="6" class="py-10 text-center text-[#45464E] dark:text-[#9AA7C2]">Tidak ada data peminjaman pada filter ini.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            @elseif($tab === 'returning')
-                <table class="w-full text-left">
-                    <thead class="bg-[#F0F3FF] dark:bg-[#0B1326] text-[#45464E] dark:text-[#9AA7C2] text-[12px] uppercase tracking-wider border-b border-line dark:border-[#263252]">
-                        <tr><th class="py-3.5 px-4 min-w-[200px]">Buku</th><th class="py-3.5 px-4">Anggota</th><th class="py-3.5 px-4 text-center">Qty</th><th class="py-3.5 px-4">Tanggal Kembali</th></tr>
-                    </thead>
-                    <tbody class="text-[14px]">
-                        @forelse($returns as $r)
-                            <tr class="hover:bg-[#F0F3FF]/60 dark:hover:bg-[#1A2440] border-b border-line dark:border-[#263252]">
-                                <td class="py-3.5 px-4 text-primary dark:text-white font-semibold">{{ $r->book->title ?? '-' }}</td>
-                                <td class="py-3.5 px-4">{{ $r->borrowing->member->name ?? '-' }}</td>
-                                <td class="py-3.5 px-4 text-center">{{ $r->quantity }}</td>
-                                <td class="py-3.5 px-4 whitespace-nowrap text-[#45464E] dark:text-[#9AA7C2]">{{ $r->returned_at ? \Carbon\Carbon::parse($r->returned_at)->format('d M Y H:i') : '-' }}</td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="4" class="py-10 text-center text-[#45464E] dark:text-[#9AA7C2]">Belum ada data pengembalian.</td></tr>
+                            <tr><td colspan="7" class="py-10 text-center text-[#45464E] dark:text-[#9AA7C2]">Tidak ada data sirkulasi pada filter ini.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
