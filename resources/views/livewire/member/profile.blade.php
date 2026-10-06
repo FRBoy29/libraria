@@ -46,27 +46,31 @@
                         <span class="w-1.5 h-1.5 rounded-full {{ $member->status === 'active' ? 'bg-success animate-pulse' : 'bg-error' }}" aria-hidden="true"></span>{{ ucfirst($member->status) }}
                     </span>
                 </div>
-                <div class="p-5 rounded-xl bg-white dark:bg-[#0B1326] relative overflow-hidden shadow-xl">
-                    <span class="material-symbols-outlined absolute top-3 right-4 text-[64px] text-navy dark:text-white opacity-5 pointer-events-none" aria-hidden="true">account_balance</span>
-                    <div class="flex flex-col gap-4 relative z-10">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-1.5">
-                                <span class="font-poppins text-[20px] font-semibold tracking-tight text-navy dark:text-white">LIBRARIA</span>
-                            </div>
-                            <span class="font-mono text-[12px] text-secondary dark:text-[#9CC2FF] font-medium tracking-widest">{{ $member->member_code }}</span>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <span class="w-16 h-16 rounded-xl overflow-hidden bg-navy text-white flex items-center justify-center flex-shrink-0 font-poppins font-bold text-[26px]" aria-hidden="true">{{ strtoupper(substr($member->name, 0, 1)) }}</span>
-                            <div class="flex flex-col min-w-0">
-                                <span class="font-poppins text-[20px] text-navy dark:text-white font-semibold truncate">{{ $member->name }}</span>
-                                <span class="text-[13px] text-[#45464E] dark:text-[#9AA7C2] truncate">{{ $member->email }}</span>
-                                <span class="font-mono text-[12px] text-brand dark:text-[#9CC2FF] pt-1">{{ $member->member_code }}</span>
+                <div class="p-5 rounded-2xl text-white shadow-xl" style="background: linear-gradient(135deg, #1c2547 0%, #101a33 100%);">
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-center gap-2.5">
+                            <img src="{{ asset('assets/logo/libraria-mark.svg') }}" alt="Logo LIBRARIA" class="w-9 h-9">
+                            <div class="flex flex-col leading-tight">
+                                <span class="font-poppins font-bold text-[17px] tracking-wide">LIBRARIA</span>
+                                <span class="text-[10px] tracking-[0.22em] text-white/50 font-medium">KARTU ANGGOTA</span>
                             </div>
                         </div>
-                        <div class="flex items-center justify-between">
-                            <span class="flex items-center gap-1.5 text-[11px] text-[#45464E] dark:text-[#9AA7C2] uppercase"><span class="material-symbols-outlined text-[14px]" aria-hidden="true">schedule</span>Masa Berlaku: <span class="text-navy dark:text-white font-medium normal-case">{{ $member->active_until ? \Carbon\Carbon::parse($member->active_until)->format('d M Y') : '—' }}</span></span>
-                            <span class="font-mono text-[11px] text-[#8A5A1D] dark:text-[#e3c290] tracking-widest">LIBRARIA</span>
+                        <span class="w-2.5 h-2.5 rounded-full mt-1 {{ $member->status === 'active' ? 'bg-success' : 'bg-danger' }}" aria-label="Status {{ $member->status }}"></span>
+                    </div>
+                    <div class="flex items-center gap-4 mt-5">
+                        <span class="w-14 h-14 rounded-lg bg-[#9aa0b0] text-[#1a2340] flex items-center justify-center font-poppins font-bold text-[26px] shrink-0" aria-hidden="true">{{ strtoupper(substr($member->name, 0, 1)) }}</span>
+                        <div class="flex flex-col min-w-0">
+                            <span class="font-poppins font-bold text-[19px] truncate">{{ $member->name }}</span>
+                            <span class="font-mono text-[12px] text-white/55">{{ $member->member_code }}</span>
+                            <span class="text-[12px] text-white/55 truncate">{{ $member->email }}</span>
                         </div>
+                    </div>
+                    <div class="border-t border-white/10 mt-5 pt-3 flex items-end justify-between">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] tracking-[0.2em] text-white/50 font-medium">MASA AKTIF</span>
+                            <span class="font-poppins font-bold text-[15px] mt-0.5">{{ $member->active_until ? \Carbon\Carbon::parse($member->active_until)->format('d M Y') : '—' }}</span>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-[11px] font-semibold {{ $member->status === 'active' ? 'bg-success/25 text-[#4ade80]' : 'bg-danger/25 text-[#f87171]' }}">{{ ucfirst($member->status) }}</span>
                     </div>
                 </div>
             </div>
