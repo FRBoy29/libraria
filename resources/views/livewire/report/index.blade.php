@@ -15,6 +15,9 @@
                 <span class="material-symbols-outlined text-[19px]" aria-hidden="true">filter_alt_off</span>Reset Filter
             </button>
         @endif
+        <button wire:click="exportExcel" type="button" class="flex items-center gap-2 px-4 h-11 rounded-lg bg-secondary text-white text-[14px] font-medium hover:brightness-110 self-start lg:self-auto">
+            <span class="material-symbols-outlined text-[19px]" aria-hidden="true">file_download</span>Ekspor Excel
+        </button>
     </div>
 
     {{-- Filters --}}
