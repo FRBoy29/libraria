@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Borrowing;
+namespace App\Livewire\Circulation;
 
 use App\Models\Book;
 use App\Models\Borrowing;
@@ -14,6 +14,7 @@ class Manager extends Component
 {
     use WithPagination;
 
+    // Form peminjaman
     public string $member_id = '';
 
     public string $book_id = '';
@@ -24,20 +25,23 @@ class Manager extends Component
 
     public string $due_at = '';
 
+    public bool $showDrawer = false;
+
+    // Daftar & filter
     public string $search = '';
 
     public string $filterStatus = '';
 
-    public bool $showDrawer = false;
+    public ?int $confirmingReturn = null;
 
     public function mount(): void
     {
         $this->borrowed_at = now()->format('Y-m-d');
         $this->due_at = now()->addDays(7)->format('Y-m-d');
 
-        $preselect = request('member');
-        if (is_string($preselect) && $preselect !== '' && Member::where('id', $preselect)->exists()) {
-            $this->member_id = $preselect;
+        $premember = request('member');
+        if (is_string($premember) && $premember !== '' && Member::where('id', $premember)->exists()) {
+            $this->member_id = $premember;
         }
 
         $prebook = request('book');
@@ -45,7 +49,7 @@ class Manager extends Component
             $this->book_id = $prebook;
         }
 
-        if ($this->member_id || $this->book_id) {
+        if (request('create') !== null || $this->member_id !== '' || $this->book_id !== '') {
             $this->showDrawer = true;
         }
     }
@@ -64,6 +68,13 @@ class Manager extends Component
         $this->borrowed_at = now()->format('Y-m-d');
         $this->due_at = now()->addDays(7)->format('Y-m-d');
         $this->showDrawer = true;
+    }
+
+    public function closeDrawer(): void
+    {
+        $this->showDrawer = false;
+        $this->reset(['member_id', 'book_id', 'quantity']);
+        $this->quantity = 1;
     }
 
     public function save()
@@ -109,15 +120,42 @@ class Manager extends Component
         });
 
         session()->flash('success', 'Peminjaman dicatat. Stok berkurang ' . $this->quantity . ' eksemplar.');
-        $this->showDrawer = false;
-        $this->reset(['member_id', 'book_id', 'quantity']);
-        $this->quantity = 1;
+        $this->closeDrawer();
     }
 
-    public function closeDrawer(): void
+    public function confirmReturn(int $detailId): void
     {
-        $this->showDrawer = false;
-        $this->reset(['member_id', 'book_id', 'quantity']);
+        $this->confirmingReturn = $detailId;
+    }
+
+    public function cancelReturn(): void
+    {
+        $this->confirmingReturn = null;
+    }
+
+    public function returnDetail(int $detailId)
+    {
+        $detail = BorrowingDetail::with(['book', 'borrowing'])->findOrFail($detailId);
+
+        if ($detail->status === 'returned') {
+            $this->confirmingReturn = null;
+            session()->flash('error', 'Pengembalian ditolak: buku sudah pernah dikembalikan.');
+
+            return;
+        }
+
+        DB::transaction(function () use ($detail) {
+            $detail->update(['status' => 'returned', 'returned_at' => now()]);
+            $detail->book->increment('stock', $detail->quantity);
+
+            $borrowing = $detail->borrowing;
+            if ($borrowing->details()->where('status', 'borrowed')->count() === 0) {
+                $borrowing->update(['status' => 'returned']);
+            }
+        });
+
+        $this->confirmingReturn = null;
+        session()->flash('success', 'Pengembalian diproses. Stok bertambah ' . $detail->quantity . ' eksemplar.');
     }
 
     public function clearFilters(): void
@@ -137,19 +175,21 @@ class Manager extends Component
             ->when($this->filterStatus === 'overdue', fn ($q) => $q->where('status', 'borrowed')->where('due_at', '<', $today))
             ->orderBy('id', 'desc')->paginate(10);
 
-        $activeBorrowings = Borrowing::where('status', 'borrowed');
+        $active = Borrowing::where('status', 'borrowed');
+        $overdueCount = (clone $active)->where('due_at', '<', $today)->count();
 
-        return view('livewire.borrowing.manager', [
+        return view('livewire.circulation.manager', [
             'borrowings' => $borrowings,
             'members' => Member::where('status', 'active')->orderBy('name')->get(),
             'books' => Book::where('stock', '>', 0)->orderBy('title')->get(),
-            'activeCount' => (clone $activeBorrowings)->count(),
-            'overdueCount' => (clone $activeBorrowings)->where('due_at', '<', $today)->count(),
+            'activeCount' => (clone $active)->count(),
+            'overdueCount' => $overdueCount,
             'borrowedQty' => (int) BorrowingDetail::where('status', 'borrowed')->sum('quantity'),
             'returnedToday' => BorrowingDetail::where('status', 'returned')->whereDate('returned_at', $today)->sum('quantity'),
+            'returnedTotal' => (int) BorrowingDetail::where('status', 'returned')->sum('quantity'),
         ])->layout('layouts.admin', [
-            'active' => 'borrowings',
-            'overdueCount' => (clone $activeBorrowings)->where('due_at', '<', $today)->count(),
+            'active' => 'circulations',
+            'overdueCount' => $overdueCount,
         ]);
     }
 }

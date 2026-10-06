@@ -157,7 +157,7 @@
                                 </td>
                                 <td class="py-3.5 px-4 text-right whitespace-nowrap">
                                     <div class="inline-flex items-center gap-1">
-                                        <a href="/admin/borrowings/create?book={{ $b->id }}" class="px-2.5 py-1 rounded-md bg-secondary text-white text-[12px] font-medium hover:brightness-110 flex items-center gap-1" title="Pinjamkan buku ini"><span class="material-symbols-outlined text-[14px]" aria-hidden="true">bookmark_add</span>Pinjam</a>
+                                        <a href="/admin/circulations?book={{ $b->id }}" class="px-2.5 py-1 rounded-md bg-secondary text-white text-[12px] font-medium hover:brightness-110 flex items-center gap-1" title="Pinjamkan buku ini"><span class="material-symbols-outlined text-[14px]" aria-hidden="true">bookmark_add</span>Pinjam</a>
                                         <button wire:click="edit({{ $b->id }})" type="button" class="p-1.5 rounded-md text-[#45464E] dark:text-[#9AA7C2] hover:text-primary" title="Edit Data"><span class="material-symbols-outlined text-[18px]" aria-hidden="true">edit</span></button>
                                         @if($confirmingDelete === $b->id)
                                             <button wire:click="delete({{ $b->id }})" type="button" class="px-2 py-1 rounded-md bg-danger text-white text-[12px]">Yakin?</button>
@@ -194,7 +194,7 @@
                             </div>
                             <div class="flex items-center gap-1 pt-1">
                                 <button wire:click="edit({{ $b->id }})" type="button" class="flex-1 px-2 py-1.5 rounded-md bg-[#F0F3FF] dark:bg-[#1A2440] text-[12px] hover:bg-[#E7EEFF] dark:hover:bg-[#263252]">Edit</button>
-                                <a href="/admin/borrowings/create?book={{ $b->id }}" class="px-2 py-1.5 rounded-md bg-secondary text-white text-[12px]">Pinjam</a>
+                                <a href="/admin/circulations?book={{ $b->id }}" class="px-2 py-1.5 rounded-md bg-secondary text-white text-[12px]">Pinjam</a>
                             </div>
                         </div>
                     </article>

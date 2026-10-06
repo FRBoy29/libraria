@@ -19,7 +19,7 @@
                 </div>
             </div>
             <div class="flex flex-wrap items-center gap-3">
-                <a href="/admin/borrowings/create" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#4F8EF7] text-white font-poppins font-semibold text-[14px] hover:brightness-110">
+                <a href="/admin/circulations?create=1" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#4F8EF7] text-white font-poppins font-semibold text-[14px] hover:brightness-110">
                     <span class="material-symbols-outlined text-[20px]" aria-hidden="true">add_circle</span><span>+ Catat Peminjaman</span>
                 </a>
                 <a href="/admin/books/create" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white/10 text-white font-poppins font-medium text-[14px] border border-[#D4B483]/40 hover:bg-white/20">
@@ -172,7 +172,7 @@
                                 <span class="px-2 py-0.5 rounded text-[11px] bg-errorbox dark:bg-[#BA1A1A]/20 text-error dark:text-[#FFB4AB] font-semibold whitespace-nowrap">Telat {{ $o['lateDays'] }} Hari</span>
                             </div>
                             <div class="flex items-center justify-end pt-1">
-                                <a class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-success text-white text-[11px] font-medium hover:opacity-95" href="/admin/returns">
+                                <a class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-success text-white text-[11px] font-medium hover:opacity-95" href="/admin/circulations">
                                     <span class="material-symbols-outlined text-[15px]" aria-hidden="true">check_circle</span><span>Proses</span>
                                 </a>
                             </div>
@@ -182,7 +182,7 @@
                     @endforelse
                 </div>
                 <div class="pt-3 text-center">
-                    <a class="inline-flex items-center gap-1 text-[13px] font-semibold text-secondary dark:text-[#9CC2FF] hover:underline" href="/admin/returns">
+                    <a class="inline-flex items-center gap-1 text-[13px] font-semibold text-secondary dark:text-[#9CC2FF] hover:underline" href="/admin/circulations">
                         <span>Kelola Semua Keterlambatan</span><span class="material-symbols-outlined text-[16px]" aria-hidden="true">chevron_right</span>
                     </a>
                 </div>
@@ -217,7 +217,7 @@
                     @endforelse
                 </div>
                 <div class="mt-4 pt-3 text-center">
-                    <a class="inline-flex items-center gap-1 text-[13px] text-primary dark:text-white font-semibold hover:text-secondary" href="/admin/borrowings">
+                    <a class="inline-flex items-center gap-1 text-[13px] text-primary dark:text-white font-semibold hover:text-secondary" href="/admin/circulations">
                         <span>Buka Log Sirkulasi Lengkap</span><span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_outward</span>
                     </a>
                 </div>

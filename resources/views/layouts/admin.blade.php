@@ -57,17 +57,18 @@
 </head>
 <body class="bg-canvas dark:bg-[#0B1326] font-inter text-[14px] text-[#111C2D] dark:text-[#DAE2FD] antialiased">
     @php($active = $active ?? 'dashboard')
-    @php($koleksiOpen = ! in_array($active, ['borrowings', 'returns']))
-    @php($sirkulasiOpen = ! in_array($active, ['books', 'categories']))
+    @php($koleksiOpen = $active !== 'circulations')
     @php($accountName = auth()->user()->name ?? 'Admin')
     @php($accountEmail = auth()->user()->email ?? '')
-    @php($accountPhoto = auth()->user()->photo ?? null)
     <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black/40 z-40 lg:hidden"></div>
     <aside id="admin-sidebar" class="fixed left-0 top-0 h-full w-[250px] bg-white dark:bg-[#131B2E] border-r border-line dark:border-[#263252] z-50 flex flex-col justify-between -translate-x-full lg:translate-x-0 transition-transform duration-200">
         <div class="flex flex-col min-h-0">
             <div class="h-16 px-6 flex items-center gap-2.5 border-b border-line dark:border-[#263252] shrink-0">
                 <img src="{{ asset('assets/logo/libraria-mark.svg') }}" alt="Logo LIBRARIA" class="h-8 w-8 object-contain">
-                <span class="text-navy dark:text-white font-poppins font-bold text-[20px] tracking-tight leading-none">Libraria</span>
+                <div class="flex flex-col min-w-0">
+                    <span class="text-navy dark:text-white font-poppins font-bold text-[20px] tracking-tight leading-none">Libraria</span>
+                    <span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2] uppercase tracking-wider font-semibold leading-none mt-0.5">Staff</span>
+                </div>
             </div>
             <nav class="flex flex-col gap-1 p-2 mt-2 overflow-y-auto">
                 <a href="/admin/dashboard" @if($active==='dashboard') aria-current="page" @endif class="flex items-center gap-2.5 px-2.5 py-2 rounded transition-colors {{ $active==='dashboard' ? 'bg-[#5694FE]/15 text-secondary dark:text-[#9CC2FF] font-semibold' : 'text-[#45464E] dark:text-[#9AA7C2] hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440] hover:text-[#111C2D] dark:hover:text-white' }}">
@@ -86,16 +87,9 @@
                 <a href="/admin/members" class="flex items-center gap-2.5 px-2.5 py-2 rounded text-[14px] transition-colors {{ $active==='members' ? 'bg-[#5694FE]/15 text-secondary dark:text-[#9CC2FF] font-semibold' : 'text-[#45464E] dark:text-[#9AA7C2] hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440] hover:text-[#111C2D] dark:hover:text-white' }}">
                     <span class="material-symbols-outlined text-[20px]">group</span><span>Anggota</span>
                 </a>
-                <div class="flex flex-col pt-1">
-                    <button id="nav-sirkulasi-btn" type="button" data-open="{{ $sirkulasiOpen ? 'true' : 'false' }}" aria-expanded="{{ $sirkulasiOpen ? 'true' : 'false' }}" aria-controls="nav-sirkulasi-sub" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded text-[#45464E] dark:text-[#9AA7C2] text-[12px] font-semibold uppercase tracking-wider hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440]">
-                        <span class="flex items-center"><span class="material-symbols-outlined text-[20px] mr-2.5">sync_alt</span><span>Sirkulasi</span></span>
-                        <span class="material-symbols-outlined text-[18px] nav-chevron" aria-hidden="true">expand_more</span>
-                    </button>
-                    <div id="nav-sirkulasi-sub" class="pl-8 flex-col gap-1" style="display: {{ $sirkulasiOpen ? 'flex' : 'none' }};">
-                        <a href="/admin/borrowings" class="px-2.5 py-1.5 rounded text-[13px] transition-colors {{ $active==='borrowings' ? 'bg-[#5694FE]/15 text-secondary dark:text-[#9CC2FF] font-semibold' : 'text-[#45464E] dark:text-[#9AA7C2] hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440] hover:text-[#111C2D] dark:hover:text-white' }}">Peminjaman</a>
-                        <a href="/admin/returns" class="px-2.5 py-1.5 rounded text-[13px] transition-colors {{ $active==='returns' ? 'bg-[#5694FE]/15 text-secondary dark:text-[#9CC2FF] font-semibold' : 'text-[#45464E] dark:text-[#9AA7C2] hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440] hover:text-[#111C2D] dark:hover:text-white' }}">Pengembalian</a>
-                    </div>
-                </div>
+                <a href="/admin/circulations" class="flex items-center gap-2.5 px-2.5 py-2 rounded text-[14px] transition-colors {{ $active==='circulations' ? 'bg-[#5694FE]/15 text-secondary dark:text-[#9CC2FF] font-semibold' : 'text-[#45464E] dark:text-[#9AA7C2] hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440] hover:text-[#111C2D] dark:hover:text-white' }}">
+                    <span class="material-symbols-outlined text-[20px]">sync_alt</span><span>Sirkulasi</span>
+                </a>
                 <a href="/admin/reports" class="flex items-center gap-2.5 px-2.5 py-2 rounded text-[14px] transition-colors {{ $active==='reports' ? 'bg-[#5694FE]/15 text-secondary dark:text-[#9CC2FF] font-semibold' : 'text-[#45464E] dark:text-[#9AA7C2] hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440] hover:text-[#111C2D] dark:hover:text-white' }}">
                     <span class="material-symbols-outlined text-[20px]">insert_chart</span><span>Laporan</span>
                 </a>
@@ -128,7 +122,7 @@
                     <span class="status-dot w-2 h-2 rounded-full bg-success animate-pulse" aria-hidden="true"></span>
                     <span class="status-text text-[12px] font-semibold text-[#45464E] dark:text-[#9AA7C2]">Buka • 08:00 - 17:00</span>
                 </span>
-                <a href="/admin/returns" class="relative p-2 rounded-lg text-[#45464E] dark:text-[#9AA7C2] hover:text-primary dark:hover:text-white hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440]" aria-label="Pengembalian dan keterlambatan">
+                <a href="/admin/circulations" class="relative p-2 rounded-lg text-[#45464E] dark:text-[#9AA7C2] hover:text-primary dark:hover:text-white hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440]" aria-label="Sirkulasi dan keterlambatan">
                     <span class="material-symbols-outlined text-[22px]">notifications</span>
                     @if(($overdueCount ?? 0) > 0)
                         <span class="absolute top-1 right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-danger rounded-full ring-2 ring-white dark:ring-[#0B1326]" title="{{ $overdueCount }} peminjaman jatuh tempo">{{ $overdueCount }}</span>
@@ -137,21 +131,13 @@
                 <div class="h-6 w-px bg-line dark:bg-[#263252]"></div>
                 <div class="relative" id="profile-menu-wrap">
                     <button id="profile-button" type="button" data-dd-toggle aria-haspopup="true" aria-expanded="false" aria-controls="profile-menu" class="flex items-center gap-2.5 pl-1 pr-2 py-1 rounded-xl hover:bg-[#F0F3FF] dark:hover:bg-[#1A2440] border border-transparent hover:border-line dark:hover:border-[#263252] transition-all cursor-pointer">
-                        @if($accountPhoto)
-                            <img src="{{ asset('storage/' . $accountPhoto) }}" alt="Foto {{ $accountName }}" class="w-8 h-8 rounded-full object-cover">
-                        @else
                             <span class="w-8 h-8 rounded-full bg-navy text-white flex items-center justify-center font-poppins font-semibold text-[13px]" aria-hidden="true">{{ strtoupper(substr($accountName, 0, 1)) }}</span>
-                        @endif
                         <span class="hidden md:block text-[13px] font-semibold text-primary dark:text-white leading-tight max-w-[140px] truncate">{{ $accountName }}</span>
                         <span class="material-symbols-outlined text-[18px] text-[#45464E] dark:text-[#9AA7C2]" aria-hidden="true">expand_more</span>
                     </button>
                     <div id="profile-menu" data-dd-menu aria-labelledby="profile-button" hidden class="absolute right-0 top-full mt-2 w-72 rounded-xl bg-white dark:bg-[#131B2E] border border-line dark:border-[#263252] shadow-lg z-50 overflow-hidden divide-y divide-line dark:divide-[#263252]">
                         <div class="p-4 bg-[#F0F3FF]/40 dark:bg-[#1A2440]/40 flex items-center gap-3">
-                            @if($accountPhoto)
-                                <img src="{{ asset('storage/' . $accountPhoto) }}" alt="Foto {{ $accountName }}" class="w-10 h-10 rounded-full object-cover flex-shrink-0">
-                            @else
                                 <span class="w-10 h-10 rounded-full bg-navy text-white flex items-center justify-center font-poppins font-semibold text-[15px] flex-shrink-0" aria-hidden="true">{{ strtoupper(substr($accountName, 0, 1)) }}</span>
-                            @endif
                             <div class="min-w-0">
                                 <div class="font-poppins font-semibold text-[14px] text-primary dark:text-white truncate">{{ $accountName }}</div>
                                 <div class="text-[11px] text-[#45464E] dark:text-[#9AA7C2] truncate">{{ $accountEmail }}</div>
@@ -239,7 +225,6 @@
                 render();
             }
             setupNav('nav-koleksi-btn', 'nav-koleksi-sub', 'koleksi');
-            setupNav('nav-sirkulasi-btn', 'nav-sirkulasi-sub', 'sirkulasi');
 
             /* Dropdown akun (delegasi global, terdaftar satu kali) */
             window.__librariaDropdown = window.__librariaDropdown || (function () {

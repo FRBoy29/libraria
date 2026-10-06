@@ -3,19 +3,15 @@
 use App\Livewire\Admin\Auth\Login as AdminLogin;
 use App\Livewire\Auth\Login as LegacyLogin;
 use App\Livewire\Book\Manager as BookManager;
-use App\Livewire\Borrowing\Manager as BorrowingManager;
 use App\Livewire\Category\Manager as CategoryManager;
 use App\Livewire\Dashboard\Stats;
 use App\Livewire\Member\Auth\Login as MemberLogin;
 use App\Livewire\Member\BookDetail as MemberBookDetail;
 use App\Livewire\Member\Catalog as MemberCatalog;
 use App\Livewire\Member\Dashboard as MemberDashboard;
-use App\Livewire\Member\History as MemberHistory;
 use App\Livewire\Member\Manager as MemberManager;
-use App\Livewire\Member\MyBorrowings as MemberBorrowings;
 use App\Livewire\Member\Profile as MemberProfile;
 use App\Livewire\Report\Index as Reports;
-use App\Livewire\ReturnBook\Manager as ReturnsManager;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -108,9 +104,10 @@ Route::middleware('admin.auth')->prefix('admin')->group(function () {
     });
     Route::get('/members/create', MemberManager::class);
     Route::get('/members/{id}/edit', MemberManager::class);
-    Route::get('/borrowings', BorrowingManager::class);
-    Route::get('/borrowings/create', BorrowingManager::class);
-    Route::get('/returns', ReturnsManager::class);
+    Route::get('/circulations', \App\Livewire\Circulation\Manager::class);
+    Route::get('/borrowings', fn () => redirect('/admin/circulations' . (request()->getQueryString() ? '?' . request()->getQueryString() : '')));
+    Route::get('/borrowings/create', fn () => redirect('/admin/circulations?create=1' . (request()->getQueryString() ? '&' . request()->getQueryString() : '')));
+    Route::get('/returns', fn () => redirect('/admin/circulations'));
     Route::get('/reports', Reports::class);
     Route::get('/profile', \App\Livewire\Admin\Profile::class);
 });

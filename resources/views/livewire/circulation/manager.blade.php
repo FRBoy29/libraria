@@ -5,10 +5,10 @@
             <div class="flex items-center gap-2">
                 <span class="text-[11px] uppercase tracking-wider text-secondary dark:text-[#9CC2FF] font-semibold bg-secondary/15 dark:bg-[#508ff8]/20 px-2.5 py-0.5 rounded-full">Sirkulasi Terpadu</span>
                 <span class="w-1 h-1 rounded-full bg-outline dark:bg-[#424753]" aria-hidden="true"></span>
-                <span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2]">Modul Peminjaman</span>
+                <span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2]">Peminjaman &amp; Pengembalian</span>
             </div>
-            <h1 class="font-poppins text-[32px] leading-[40px] text-primary dark:text-white font-semibold tracking-tight">Peminjaman Buku</h1>
-            <p class="text-[14px] text-[#45464E] dark:text-[#9AA7C2] max-w-2xl">Catat transaksi peminjaman anggota, cek ketersediaan stok, dan pantau batas pengembalian.</p>
+            <h1 class="font-poppins text-[32px] leading-[40px] text-primary dark:text-white font-semibold tracking-tight">Sirkulasi Buku</h1>
+            <p class="text-[14px] text-[#45464E] dark:text-[#9AA7C2] max-w-2xl">Catat peminjaman baru dan proses pengembalian dalam satu halaman. Stok diperbarui otomatis di setiap transaksi.</p>
         </div>
         <div class="flex items-center gap-2 self-start lg:self-auto">
             <button wire:click="openCreate" type="button" class="flex items-center gap-2 px-5 h-11 rounded-lg bg-secondary text-white text-[14px] font-medium hover:brightness-110">
@@ -45,11 +45,11 @@
         </div>
         <div class="p-4 rounded-xl bg-white dark:bg-[#131B2E] border border-line dark:border-[#263252] flex items-center justify-between">
             <div class="flex flex-col">
-                <span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2]">Anggota Peminjam</span>
-                <span class="font-poppins text-[24px] leading-8 text-primary dark:text-white font-semibold mt-0.5">{{ number_format($members->count()) }}</span>
-                <span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2] mt-1">aktif &amp; layak</span>
+                <span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2]">Total Dikembalikan</span>
+                <span class="font-poppins text-[24px] leading-8 text-primary dark:text-white font-semibold mt-0.5">{{ number_format($returnedTotal) }}</span>
+                <span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2] mt-1">sejak sistem aktif</span>
             </div>
-            <span class="w-11 h-11 rounded-xl bg-[#F0F3FF] dark:bg-[#1A2440] flex items-center justify-center text-navy dark:text-white"><span class="material-symbols-outlined text-[24px]" aria-hidden="true">group</span></span>
+            <span class="w-11 h-11 rounded-xl bg-[#F0F3FF] dark:bg-[#1A2440] flex items-center justify-center text-navy dark:text-white"><span class="material-symbols-outlined text-[24px]" aria-hidden="true">history</span></span>
         </div>
     </div>
 
@@ -57,7 +57,7 @@
     <div class="p-4 rounded-xl bg-white dark:bg-[#131B2E] border border-line dark:border-[#263252] flex flex-col lg:flex-row lg:items-center justify-between gap-3">
         <div class="relative flex-1 min-w-[240px]">
             <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[#75777F] dark:text-[#8c909e] text-[20px] pointer-events-none" aria-hidden="true">search</span>
-            <input wire:model.live="search" type="text" class="w-full h-11 pl-11 pr-4 bg-canvas dark:bg-[#0B1326] border border-line dark:border-[#263252] rounded-lg text-[14px] placeholder:text-[#75777F] dark:placeholder:text-[#8c909e] focus:outline-none focus:ring-2 focus:ring-secondary/20" placeholder="Cari anggota atau judul buku..." aria-label="Cari peminjaman">
+            <input wire:model.live="search" type="text" class="w-full h-11 pl-11 pr-4 bg-canvas dark:bg-[#0B1326] border border-line dark:border-[#263252] rounded-lg text-[14px] placeholder:text-[#75777F] dark:placeholder:text-[#8c909e] focus:outline-none focus:ring-2 focus:ring-secondary/20" placeholder="Cari anggota atau judul buku..." aria-label="Cari transaksi">
         </div>
         <div class="flex items-center gap-2">
             @if($search || $filterStatus)
@@ -78,8 +78,8 @@
                 <thead class="bg-[#F0F3FF] dark:bg-[#0B1326] text-[#45464E] dark:text-[#9AA7C2] text-[12px] uppercase tracking-wider border-b border-line dark:border-[#263252]">
                     <tr>
                         <th class="py-3.5 px-4 w-16">ID</th>
-                        <th class="py-3.5 px-4 min-w-[180px]">Anggota</th>
-                        <th class="py-3.5 px-4 min-w-[220px]">Buku</th>
+                        <th class="py-3.5 px-4 min-w-[170px]">Anggota</th>
+                        <th class="py-3.5 px-4 min-w-[200px]">Buku</th>
                         <th class="py-3.5 px-4">Pinjam</th>
                         <th class="py-3.5 px-4">Jatuh Tempo</th>
                         <th class="py-3.5 px-4 min-w-[150px]">Status</th>
@@ -102,7 +102,23 @@
                             </td>
                             <td class="py-3.5 px-4">
                                 @foreach($b->details as $d)
-                                    <span class="block truncate">{{ $d->book->title ?? '-' }} <span class="text-[#45464E] dark:text-[#9AA7C2]">×{{ $d->quantity }}</span></span>
+                                    <span class="flex items-center justify-between gap-2">
+                                        <span class="truncate">{{ $d->book->title ?? '-' }} <span class="text-[#45464E] dark:text-[#9AA7C2]">×{{ $d->quantity }}</span></span>
+                                        @if($b->status === 'borrowed')
+                                            @if($d->status === 'returned')
+                                                <span class="px-1.5 py-0.5 rounded bg-success/15 text-success text-[10px] font-semibold shrink-0">Kembali</span>
+                                            @elseif($confirmingReturn === $d->id)
+                                                <span class="inline-flex items-center gap-1 shrink-0">
+                                                    <button wire:click="returnDetail({{ $d->id }})" type="button" class="px-2 py-0.5 rounded bg-danger text-white text-[11px] font-medium">Ya</button>
+                                                    <button wire:click="cancelReturn" type="button" class="px-2 py-0.5 rounded bg-[#F0F3FF] dark:bg-[#1A2440] text-[11px]">Batal</button>
+                                                </span>
+                                            @else
+                                                <button wire:click="confirmReturn({{ $d->id }})" type="button" class="px-2 py-0.5 rounded bg-success text-white text-[11px] font-medium hover:opacity-90 shrink-0">Kembalikan</button>
+                                            @endif
+                                        @else
+                                            <span class="px-1.5 py-0.5 rounded bg-success/15 text-success text-[10px] font-semibold shrink-0">Kembali</span>
+                                        @endif
+                                    </span>
                                 @endforeach
                             </td>
                             <td class="py-3.5 px-4 whitespace-nowrap text-[#45464E] dark:text-[#9AA7C2]">{{ \Carbon\Carbon::parse($b->borrowed_at)->format('d M Y') }}</td>
@@ -117,15 +133,15 @@
                                 @endif
                             </td>
                             <td class="py-3.5 px-4 text-right whitespace-nowrap">
-                                @if($b->status === 'borrowed')
-                                    <a href="/admin/returns" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-success text-white text-[12px] font-medium hover:opacity-90"><span class="material-symbols-outlined text-[14px]" aria-hidden="true">assignment_return</span>Kembalikan</a>
+                                @if($b->status === 'borrowed' && $b->details->where('status', 'borrowed')->isNotEmpty())
+                                    <span class="text-[12px] text-[#75777F] dark:text-[#8c909e]">{{ $b->details->where('status', 'borrowed')->sum('quantity') }} aktif</span>
                                 @else
                                     <span class="text-[12px] text-[#75777F] dark:text-[#8c909e]">Selesai</span>
                                 @endif
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="7" class="py-10 text-center text-[#45464E] dark:text-[#9AA7C2]">Belum ada transaksi peminjaman.</td></tr>
+                        <tr><td colspan="7" class="py-10 text-center text-[#45464E] dark:text-[#9AA7C2]">Belum ada transaksi sirkulasi.</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -138,13 +154,13 @@
 
     {{-- Create drawer --}}
     @if($showDrawer)
-        <div class="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-labelledby="borrow-drawer-title">
+        <div class="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-labelledby="circ-drawer-title">
             <div class="absolute inset-0 bg-[#2d3133]/50 backdrop-blur-[2px]" wire:click="closeDrawer"></div>
             <div class="absolute right-0 top-0 h-full w-full max-w-lg bg-white dark:bg-[#131B2E] shadow-2xl flex flex-col">
                 <div class="p-6 flex items-center justify-between bg-[#F0F3FF] dark:bg-[#1A2440] border-b border-line dark:border-[#263252]">
                     <div class="flex flex-col">
                         <span class="text-[11px] uppercase tracking-wider text-secondary dark:text-[#9CC2FF] font-semibold">Formulir Sirkulasi</span>
-                        <h2 id="borrow-drawer-title" class="font-poppins text-[20px] text-primary dark:text-white font-semibold">Catat Peminjaman</h2>
+                        <h2 id="circ-drawer-title" class="font-poppins text-[20px] text-primary dark:text-white font-semibold">Catat Peminjaman</h2>
                     </div>
                     <button wire:click="closeDrawer" type="button" class="w-9 h-9 rounded-full bg-white dark:bg-[#131B2E] text-[#75777F] dark:text-[#8c909e] hover:text-primary flex items-center justify-center" aria-label="Tutup"><span class="material-symbols-outlined text-[20px]" aria-hidden="true">close</span></button>
                 </div>

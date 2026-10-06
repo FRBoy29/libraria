@@ -150,7 +150,7 @@
                                     </td>
                                     <td class="py-4 px-4 text-right whitespace-nowrap" wire:click.stop>
                                         <div class="flex items-center justify-end gap-1.5">
-                                            <a href="/admin/borrowings/create?member={{ $m->id }}" class="px-2.5 py-1 rounded-md bg-secondary text-white text-[12px] font-medium hover:brightness-110 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]" aria-hidden="true">bookmark_add</span>Pinjam</a>
+                                            <a href="/admin/circulations?member={{ $m->id }}" class="px-2.5 py-1 rounded-md bg-secondary text-white text-[12px] font-medium hover:brightness-110 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]" aria-hidden="true">bookmark_add</span>Pinjam</a>
                                             <button wire:click="select({{ $m->id }})" type="button" class="p-1.5 rounded-md text-[#45464E] dark:text-[#9AA7C2] hover:text-primary" title="Detail"><span class="material-symbols-outlined text-[18px]" aria-hidden="true">visibility</span></button>
                                             <button wire:click="edit({{ $m->id }})" type="button" class="p-1.5 rounded-md text-[#45464E] dark:text-[#9AA7C2] hover:text-primary" title="Edit"><span class="material-symbols-outlined text-[18px]" aria-hidden="true">edit</span></button>
                                             @if($confirmingDelete === $m->id)
@@ -217,7 +217,7 @@
                         <span class="text-[11px] px-2 py-0.5 rounded-full {{ $selected->status === 'active' ? 'bg-success/15 text-success' : 'bg-danger/15 text-danger' }} font-semibold">{{ ucfirst($selected->status) }}</span>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
-                        <a href="/admin/borrowings/create?member={{ $selected->id }}" class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-[#F0F3FF] dark:bg-[#1A2440] hover:bg-[#E7EEFF] dark:hover:bg-[#263252] text-primary dark:text-white text-[13px] font-medium">
+                        <a href="/admin/circulations?member={{ $selected->id }}" class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-[#F0F3FF] dark:bg-[#1A2440] hover:bg-[#E7EEFF] dark:hover:bg-[#263252] text-primary dark:text-white text-[13px] font-medium">
                             <span class="material-symbols-outlined text-[18px]" aria-hidden="true">bookmark_add</span>Pinjam
                         </a>
                         <button type="button" onclick="window.print()" class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-[#F0F3FF] dark:bg-[#1A2440] hover:bg-[#E7EEFF] dark:hover:bg-[#263252] text-primary dark:text-white text-[13px] font-medium">
