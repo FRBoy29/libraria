@@ -1,7 +1,6 @@
 <?php
 
 use App\Livewire\Admin\Auth\Login as AdminLogin;
-use App\Livewire\Auth\Login as LegacyLogin;
 use App\Livewire\Book\Manager as BookManager;
 use App\Livewire\Category\Manager as CategoryManager;
 use App\Livewire\Dashboard\Stats;
@@ -121,6 +120,3 @@ Route::middleware('member.auth')->prefix('member')->group(function () {
     Route::redirect('/borrowings', '/member/activity');
     Route::redirect('/history', '/member/activity');
 });
-
-// Referensi lama yang tidak dipakai lagi (dipertahankan agar tidak 404 bila di-bookmark)
-Route::get('/legacy-login', LegacyLogin::class)->middleware('admin.guest');

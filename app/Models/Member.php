@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Member extends Authenticatable
 {
+    use HasFactory;
     protected $fillable = [
         'member_code', 'name', 'email', 'password', 'phone', 'address', 'status', 'active_until',
     ];

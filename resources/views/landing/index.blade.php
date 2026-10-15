@@ -13,32 +13,29 @@
             <span class="status-dot" aria-hidden="true"></span>
             <span class="status-text">Layanan Buka 08:00 – 17:00 WIB</span>
         </a>
-        <button class="nav-btn" type="button" data-modal="help">Bantuan</button>
-        <button class="nav-btn icon-btn" type="button" id="theme-toggle" aria-label="Alihkan mode terang dan gelap" aria-pressed="false" title="Alihkan tema">
-            <span class="material-symbols-outlined" aria-hidden="true">dark_mode</span>
-        </button>
-        <div class="dropdown">
-            <button class="nav-btn btn-primary" type="button" id="login-button" aria-haspopup="true" aria-expanded="false" aria-controls="login-menu">
-                Masuk
-                <span class="material-symbols-outlined" aria-hidden="true">expand_more</span>
+        <nav>
+            <button class="nav-btn icon-btn" type="button" id="theme-toggle" aria-label="Alihkan mode terang dan gelap" aria-pressed="false" title="Alihkan tema">
+                <span class="material-symbols-outlined" aria-hidden="true">dark_mode</span>
             </button>
-            <div class="dropdown-menu" id="login-menu" role="menu" hidden>
-                <p class="dropdown-head">Pilih Akses Masuk:</p>
-                <a class="dropdown-item" role="menuitem" href="/member/login">
-                    <span class="tile tile-blue" aria-hidden="true"><span class="material-symbols-outlined">badge</span></span>
-                    <span><strong>Login sebagai Member</strong><span>Katalog, pinjaman, dan riwayat</span></span>
-                </a>
-                <div class="dropdown-divider" aria-hidden="true"></div>
-                <a class="dropdown-item gold" role="menuitem" href="/admin/login">
-                    <span class="tile tile-gold" aria-hidden="true"><span class="material-symbols-outlined">admin_panel_settings</span></span>
-                    <span><strong>Login sebagai Admin<span class="staff-badge">Staf</span></strong><span>Inventaris, sirkulasi, dan manajemen</span></span>
-                </a>
-                <div class="dropdown-foot">
-                    <span>Butuh bantuan akun?</span>
-                    <button class="link-btn" type="button" data-modal="help">Bantuan</button>
+            <div class="dropdown">
+                <button class="nav-btn btn-primary" type="button" id="login-button" aria-haspopup="true" aria-expanded="false" aria-controls="login-menu">
+                    Masuk
+                    <span class="material-symbols-outlined" aria-hidden="true">expand_more</span>
+                </button>
+                <div class="dropdown-menu" id="login-menu" role="menu" hidden>
+                    <p class="dropdown-head">Pilih Akses Masuk:</p>
+                    <a class="dropdown-item" role="menuitem" href="/member/login">
+                        <span class="tile tile-blue" aria-hidden="true"><span class="material-symbols-outlined">badge</span></span>
+                        <span><strong>Login sebagai Member</strong><span>Katalog, pinjaman, dan riwayat</span></span>
+                    </a>
+                    <div class="dropdown-divider" aria-hidden="true"></div>
+                    <a class="dropdown-item gold" role="menuitem" href="/admin/login">
+                        <span class="tile tile-gold" aria-hidden="true"><span class="material-symbols-outlined">admin_panel_settings</span></span>
+                        <span><strong>Login sebagai Admin<span class="staff-badge">Staf</span></strong><span>Inventaris, sirkulasi, dan manajemen</span></span>
+                    </a>
                 </div>
             </div>
-        </div>
+        </nav>
     </div>
 </header>
 
@@ -52,7 +49,6 @@
             </div>
             <h1 id="hero-title">Libraria</h1>
             <p class="hero-pill"><span class="pill-dot" aria-hidden="true"></span>Sistem Informasi Perpustakaan<span class="pill-dot" aria-hidden="true"></span></p>
-            <p class="hero-tagline">More Than Books. A Brighter Tomorrow.</p>
             <p class="hero-desc">Akses terpadu untuk pengelolaan perpustakaan dan layanan pemustaka.</p>
             <!-- MOCK DATA: replace with database data later -->
             <div class="stats" role="list" aria-label="Statistik layanan">

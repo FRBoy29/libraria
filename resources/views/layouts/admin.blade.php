@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIBRARIA Admin</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('assets/logo/libraria-mark.svg') }}">
+    <title>Libraria Staff</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -37,8 +38,13 @@
             },
         };
         try {
-            if (localStorage.getItem("libraria-admin-theme") === "dark") {
+            var t = localStorage.getItem("libraria-theme") || localStorage.getItem("libraria-admin-theme");
+            if (t === "dark") {
                 document.documentElement.classList.add("dark");
+                document.documentElement.setAttribute("data-theme", "dark");
+            } else {
+                document.documentElement.classList.remove("dark");
+                document.documentElement.setAttribute("data-theme", "light");
             }
         } catch (e) { /* storage unavailable */ }
     </script>
@@ -270,11 +276,22 @@
             }
             function setTheme(dark) {
                 document.documentElement.classList.toggle('dark', dark);
-                try { localStorage.setItem('libraria-admin-theme', dark ? 'dark' : 'light'); } catch (e) {}
+                document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+                try {
+                    localStorage.setItem('libraria-theme', dark ? 'dark' : 'light');
+                } catch (e) {}
                 renderTheme();
             }
             renderTheme();
             if (themeRow) themeRow.addEventListener('click', function () { setTheme(!isDark()); });
+            window.addEventListener('storage', function (e) {
+                if (e.key === 'libraria-theme') {
+                    var dark = e.newValue === 'dark';
+                    document.documentElement.classList.toggle('dark', dark);
+                    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+                    renderTheme();
+                }
+            });
 
             /* Service status follows device clock (08:00-17:00) */
             var status = document.getElementById('admin-service-status');

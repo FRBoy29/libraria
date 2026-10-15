@@ -2,18 +2,14 @@
     {{-- Breadcrumb + judul --}}
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="flex flex-col gap-1">
-            <nav class="flex items-center gap-1.5 text-[11px] text-[#45464E] dark:text-[#9AA7C2] tracking-wide" aria-label="Breadcrumb">
-                <a class="hover:text-brand dark:hover:text-[#9CC2FF] transition-colors flex items-center gap-1" href="/member/dashboard">
-                    <span class="material-symbols-outlined text-[14px]" aria-hidden="true">home</span> Beranda
-                </a>
-                <span class="text-[#75777F] dark:text-[#424753]">/</span>
-                <span class="hover:text-brand dark:hover:text-[#9CC2FF] transition-colors cursor-default">Katalog Koleksi Buku</span>
-                <span class="text-[#75777F] dark:text-[#424753]">/</span>
-                <span class="text-[#8A5A1D] dark:text-[#e3c290] font-medium">Buku Tersedia</span>
-            </nav>
+            <div class="flex items-center gap-2">
+                <span class="text-[11px] uppercase tracking-wider text-secondary dark:text-[#9CC2FF] font-semibold bg-secondary/15 dark:bg-[#508ff8]/20 px-2.5 py-0.5 rounded-full">Katalog Koleksi Buku</span>
+                <span class="w-1 h-1 rounded-full bg-outline dark:bg-[#424753]" aria-hidden="true"></span>
+                <span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2]">Integrasi Terpadu</span>
+            </div>
             <h1 class="font-poppins text-[32px] leading-[40px] text-navy dark:text-white font-semibold tracking-tight">Katalog Koleksi &amp; Buku Tersedia</h1>
             <p class="text-[13px] text-[#45464E] dark:text-[#9AA7C2] max-w-3xl leading-relaxed">
-                Jelajahi koleksi buku perpustakaan dan periksa ketersediaan eksemplarnya. Peminjaman diproses oleh petugas.
+                Jelajahi koleksi buku perpustakaan dan periksa ketersediaannya. Peminjaman diproses oleh petugas.
             </p>
         </div>
         <div class="flex flex-wrap items-center gap-2 self-start md:self-auto">
@@ -21,10 +17,6 @@
                 <span class="w-2 h-2 rounded-full bg-success animate-pulse" aria-hidden="true"></span>
                 <span class="text-[11px] text-[#45464E] dark:text-[#9AA7C2]">Tersedia:</span>
                 <span class="text-[11px] text-navy dark:text-white font-semibold">{{ number_format($availableTitles) }} Judul</span>
-            </span>
-            <span class="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#F0F3FF] dark:bg-[#131B2E] border border-line dark:border-[#263252]">
-                <span class="material-symbols-outlined text-brand dark:text-[#9CC2FF] text-[14px]" aria-hidden="true">schedule</span>
-                <span class="text-[11px] text-navy dark:text-white font-medium">Meja Sirkulasi s/d 17:00</span>
             </span>
         </div>
     </div>
@@ -104,10 +96,10 @@
                             <div class="flex items-center gap-1.5 text-[11px] mt-0.5">
                                 @if($b->stock > 1)
                                     <span class="w-1.5 h-1.5 rounded-full bg-success" aria-hidden="true"></span>
-                                    <span class="text-success font-medium">Tersedia: {{ $b->stock }} eksemplar</span>
+                                    <span class="text-success font-medium">Tersedia: {{ $b->stock }} buku</span>
                                 @elseif($b->stock === 1)
                                     <span class="w-1.5 h-1.5 rounded-full bg-warning" aria-hidden="true"></span>
-                                    <span class="text-warning font-medium">Tersisa 1 eksemplar</span>
+                                    <span class="text-warning font-medium">Tersisa 1 buku</span>
                                 @else
                                     <span class="w-1.5 h-1.5 rounded-full bg-danger" aria-hidden="true"></span>
                                     <span class="text-error dark:text-[#FFB4AB] font-medium">Stok habis — hubungi petugas</span>

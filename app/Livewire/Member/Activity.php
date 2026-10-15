@@ -105,7 +105,9 @@ class Activity extends Component
         $years = BorrowingDetail::whereIn(
             'borrowing_id', Borrowing::where('member_id', $member->id)->pluck('id')
         )->where('status', 'returned')->whereNotNull('returned_at')
-            ->selectRaw('YEAR(returned_at) y')->distinct()->orderByDesc('y')->pluck('y');
+            ->pluck('returned_at')
+            ->map(fn ($d) => \Carbon\Carbon::parse($d)->year)
+            ->unique()->sortDesc()->values();
 
         return view('livewire.member.activity', [
             'activeDetails' => $activeDetails,

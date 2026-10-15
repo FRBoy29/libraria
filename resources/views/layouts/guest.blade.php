@@ -12,10 +12,16 @@
     <script>
         tailwind.config = { darkMode: "class" };
         try {
-            var t = localStorage.getItem("libraria-auth-theme");
-            if (t !== "light") document.documentElement.classList.add("dark");
+            var t = localStorage.getItem("libraria-theme") || localStorage.getItem("libraria-auth-theme");
+            if (t === "dark") {
+                document.documentElement.classList.add("dark");
+                document.documentElement.setAttribute("data-theme", "dark");
+            } else {
+                document.documentElement.classList.remove("dark");
+                document.documentElement.setAttribute("data-theme", "light");
+            }
         } catch (e) {
-            document.documentElement.classList.add("dark");
+            document.documentElement.setAttribute("data-theme", "light");
         }
     </script>
     <style>
@@ -46,11 +52,20 @@
             }
             function setAuthTheme(dark) {
                 document.documentElement.classList.toggle("dark", dark);
-                try { localStorage.setItem("libraria-auth-theme", dark ? "dark" : "light"); } catch (e) {}
+                document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+                try { localStorage.setItem("libraria-theme", dark ? "dark" : "light"); } catch (e) {}
                 renderAuthTheme();
             }
             window.toggleAuthTheme = function () { setAuthTheme(!isDark()); };
             renderAuthTheme();
+            window.addEventListener('storage', function (e) {
+                if (e.key === 'libraria-theme') {
+                    var dark = e.newValue === 'dark';
+                    document.documentElement.classList.toggle('dark', dark);
+                    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+                    renderAuthTheme();
+                }
+            });
         })();
     </script>
     <livewire:scripts />

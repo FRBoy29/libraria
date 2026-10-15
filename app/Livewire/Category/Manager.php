@@ -29,8 +29,15 @@ class Manager extends Component
     protected function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
+            'name' => ['required', 'string', 'max:255', 'regex:/^[\p{L}0-9][\p{L}0-9\s\.\'\-\&]*$/u'],
             'description' => 'nullable|string|max:1000',
+        ];
+    }
+
+    protected function messages(): array
+    {
+        return [
+            'name.regex' => 'Nama kategori hanya boleh berisi huruf, angka, spasi, titik, tanda kutip, tanda hubung, dan ampersand (&).',
         ];
     }
 

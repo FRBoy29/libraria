@@ -20,9 +20,11 @@
     }
 
     function setTheme(theme) {
-        document.documentElement.setAttribute('data-theme', theme);
+        var isDark = theme === 'dark';
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        document.documentElement.classList.toggle('dark', isDark);
         try {
-            localStorage.setItem(THEME_KEY, theme);
+            localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light');
         } catch (e) { /* storage unavailable: theme still applies for session */ }
         renderThemeIcon();
     }
@@ -39,6 +41,15 @@
             }
         });
     }
+
+    window.addEventListener('storage', function (e) {
+        if (e.key === THEME_KEY) {
+            var isDark = e.newValue === 'dark';
+            document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+            document.documentElement.classList.toggle('dark', isDark);
+            renderThemeIcon();
+        }
+    });
 
     /* ---------- Service status follows device clock ---------- */
     var statusLink = document.getElementById('service-status');

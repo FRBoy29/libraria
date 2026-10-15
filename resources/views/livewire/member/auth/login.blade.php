@@ -53,7 +53,7 @@
                                 </div>
                                 <div class="relative flex items-center">
                                     <span class="material-symbols-outlined absolute left-3.5 text-[#75777F] dark:text-[#8c909e] text-[1.25rem] pointer-events-none" aria-hidden="true">badge</span>
-                                    <input wire:model="member_code" type="text" autocomplete="username" id="memberCode" placeholder="LIB-000001" class="w-full pl-11 pr-4 py-2.5 bg-[#F0F3FF] dark:bg-[#131b2e] border border-transparent focus:border-[#4F8EF7] dark:focus:border-[#4F8EF7] rounded-lg placeholder:text-[#8c909e] text-[14px] focus:outline-none focus:shadow-[0_0_0_1px_#4F8EF7]">
+                                    <input wire:model="member_code" type="text" autocomplete="username" id="memberCode" placeholder="M001" class="w-full pl-11 pr-4 py-2.5 bg-[#F0F3FF] dark:bg-[#131b2e] border border-transparent focus:border-[#4F8EF7] dark:focus:border-[#4F8EF7] rounded-lg placeholder:text-[#8c909e] text-[14px] focus:outline-none focus:shadow-[0_0_0_1px_#4F8EF7]">
                                 </div>
                                 @error('member_code')<p class="text-[12px] text-[#BA1A1A] dark:text-[#ffb4ab]">{{ $message }}</p>@enderror
                                 <span class="text-[11px] text-[#45464E] dark:text-[#c2c6d5] flex items-center gap-1">

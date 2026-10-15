@@ -4,14 +4,10 @@ namespace App\Livewire\Admin;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
-use Livewire\WithFileUploads;
 
 class Profile extends Component
 {
-    use WithFileUploads;
-
     public string $name = '';
 
     public string $email = '';
@@ -21,8 +17,6 @@ class Profile extends Component
     public string $new_password = '';
 
     public string $new_password_confirmation = '';
-
-    public $photoUpload = null;
 
     public function mount(): void
     {
@@ -40,36 +34,6 @@ class Profile extends Component
 
         Auth::guard('web')->user()->update($data);
         session()->flash('success', 'Profil diperbarui.');
-    }
-
-    public function savePhoto()
-    {
-        $this->validate([
-            'photoUpload' => 'required|image|max:2048',
-        ]);
-
-        $user = Auth::guard('web')->user();
-
-        if ($user->photo) {
-            Storage::disk('public')->delete($user->photo);
-        }
-
-        $user->update([
-            'photo' => $this->photoUpload->store('photos', 'public'),
-        ]);
-        $this->reset('photoUpload');
-        session()->flash('success', 'Foto profil diperbarui.');
-    }
-
-    public function removePhoto()
-    {
-        $user = Auth::guard('web')->user();
-
-        if ($user->photo) {
-            Storage::disk('public')->delete($user->photo);
-            $user->update(['photo' => null]);
-            session()->flash('success', 'Foto profil dihapus.');
-        }
     }
 
     public function changePassword()

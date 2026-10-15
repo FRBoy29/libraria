@@ -20,9 +20,11 @@
     }
 
     function setTheme(theme) {
-        document.documentElement.setAttribute('data-theme', theme);
+        var isDark = theme === 'dark';
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        document.documentElement.classList.toggle('dark', isDark);
         try {
-            localStorage.setItem(THEME_KEY, theme);
+            localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light');
         } catch (e) { /* storage unavailable: theme still applies for session */ }
         renderThemeIcon();
     }
@@ -39,6 +41,15 @@
             }
         });
     }
+
+    window.addEventListener('storage', function (e) {
+        if (e.key === THEME_KEY) {
+            var isDark = e.newValue === 'dark';
+            document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+            document.documentElement.classList.toggle('dark', isDark);
+            renderThemeIcon();
+        }
+    });
 
     /* ---------- Service status follows device clock ---------- */
     var statusLink = document.getElementById('service-status');
@@ -65,42 +76,43 @@
     var loginBtn = document.getElementById('login-button');
     var loginMenu = document.getElementById('login-menu');
 
-    function isMenuOpen() {
-        return !!loginMenu && loginMenu.hidden === false;
+    function isMenuOpen(menuEl) {
+        return !!menuEl && menuEl.hidden === false;
     }
 
-    function openMenu() {
-        if (!loginMenu || !loginBtn) return;
-        loginMenu.hidden = false;
-        loginBtn.setAttribute('aria-expanded', 'true');
+    function openMenu(btn, menu) {
+        if (!btn || !menu) return;
+        menu.hidden = false;
+        btn.setAttribute('aria-expanded', 'true');
     }
 
-    function closeMenu() {
-        if (!loginMenu || !loginBtn) return;
-        loginMenu.hidden = true;
-        loginBtn.setAttribute('aria-expanded', 'false');
+    function closeMenu(btn, menu) {
+        if (!btn || !menu) return;
+        menu.hidden = true;
+        btn.setAttribute('aria-expanded', 'false');
     }
 
-    if (loginBtn && loginMenu) {
-        loginBtn.addEventListener('click', function (e) {
+    function setupLoginDropdown(btn, menu) {
+        if (!btn || !menu) return;
+        btn.addEventListener('click', function (e) {
             e.stopPropagation();
-            if (isMenuOpen()) closeMenu();
-            else openMenu();
+            if (isMenuOpen(menu)) closeMenu(btn, menu);
+            else openMenu(btn, menu);
         });
-
         document.addEventListener('click', function (e) {
-            if (isMenuOpen() && !loginMenu.contains(e.target) && e.target !== loginBtn && !loginBtn.contains(e.target)) {
-                closeMenu();
+            if (isMenuOpen(menu) && !menu.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
+                closeMenu(btn, menu);
             }
         });
-
         document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape' && isMenuOpen()) {
-                closeMenu();
-                loginBtn.focus();
+            if (e.key === 'Escape' && isMenuOpen(menu)) {
+                closeMenu(btn, menu);
+                btn.focus();
             }
         });
     }
+
+    setupLoginDropdown(loginBtn, loginMenu);
 
     /* ---------- Reusable modal ---------- */
     var MODAL_CONTENT = {
@@ -137,7 +149,6 @@
     function openModal(type) {
         var content = MODAL_CONTENT[type];
         if (!content || !backdrop) return;
-        closeMenu();
         lastFocused = document.activeElement;
         modalTitle.textContent = content.title;
         modalBody.innerHTML = content.body;
@@ -179,7 +190,6 @@
             if (target) {
                 e.preventDefault();
                 target.scrollIntoView({ behavior: 'smooth' });
-                closeMenu();
             }
         });
     }

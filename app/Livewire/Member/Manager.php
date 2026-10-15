@@ -43,17 +43,27 @@ class Manager extends Component
     protected function rules(): array
     {
         $id = $this->editingId ?? 'NULL';
-        $passwordRule = $this->editingId ? 'nullable|min:6' : 'required|min:6';
+        $passwordRules = $this->editingId
+            ? ['nullable', 'string', 'min:6']
+            : ['required', 'string', 'min:6'];
 
         return [
-            'member_code' => 'required|string|max:255|unique:members,member_code,' . $id . ',id',
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:members,email,' . $id . ',id',
-            'password' => $passwordRule,
-            'phone' => 'nullable|string|max:50',
-            'address' => 'nullable|string',
-            'status' => 'required|in:active,inactive',
-            'active_until' => 'nullable|date',
+            'member_code' => ['required', 'string', 'max:255', 'unique:members,member_code,' . $id . ',id'],
+            'name' => ['required', 'string', 'max:255', 'regex:/^[\p{L}\s]+$/u'],
+            'email' => ['required', 'email', 'unique:members,email,' . $id . ',id'],
+            'password' => $passwordRules,
+            'phone' => ['nullable', 'string', 'max:50', 'regex:/^[0-9\+\-\s\(\)]+$/'],
+            'address' => ['nullable', 'string', 'max:500'],
+            'status' => ['required', 'in:active,inactive'],
+            'active_until' => ['nullable', 'date'],
+        ];
+    }
+
+    protected function messages(): array
+    {
+        return [
+            'name.regex' => 'Nama hanya boleh berisi huruf dan spasi.',
+            'phone.regex' => 'Nomor telepon hanya boleh berisi angka, spasi, tanda plus, kurung, dan tanda hubung.',
         ];
     }
 
@@ -85,7 +95,7 @@ class Manager extends Component
     {
         $n = (Member::max('id') ?? 0) + 1;
         do {
-            $code = 'LIB-' . str_pad((string) $n, 6, '0', STR_PAD_LEFT);
+            $code = 'M' . str_pad((string) $n, 3, '0', STR_PAD_LEFT);
             $n++;
         } while (Member::where('member_code', $code)->exists());
 

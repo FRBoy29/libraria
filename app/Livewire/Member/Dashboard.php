@@ -43,11 +43,6 @@ class Dashboard extends Component
             ->orderByDesc('stock')->orderBy('title')
             ->limit(3)->get();
 
-        // Aktivitas terakhir
-        $recent = BorrowingDetail::with('book')
-            ->whereIn('borrowing_id', $borrowingIds)
-            ->orderByDesc('id')->limit(5)->get();
-
         return view('livewire.member.dashboard', [
             'member' => $member,
             'firstName' => explode(' ', $member->name)[0],
@@ -60,7 +55,6 @@ class Dashboard extends Component
             'nearestBook' => $nearest ? ($nearest->details()->with('book')->first()?->book?->title ?? null) : null,
             'historyQty' => $historyQty,
             'recommended' => $recommended,
-            'recent' => $recent,
             'totalTitles' => Book::count(),
         ])->layout('layouts.member', ['nav' => 'dashboard', 'overdueCount' => $overdueCount]);
     }

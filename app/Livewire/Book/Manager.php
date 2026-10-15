@@ -52,15 +52,25 @@ class Manager extends Component
     protected function rules(): array
     {
         return [
-            'isbn' => 'required|string|max:255|unique:books,isbn,' . ($this->editingId ?? 'NULL') . ',id',
-            'title' => 'required|string|max:255',
-            'author' => 'required|string|max:255',
-            'publisher' => 'nullable|string|max:255',
+            'isbn' => ['required', 'string', 'max:255', 'unique:books,isbn,' . ($this->editingId ?? 'NULL') . ',id', 'regex:/^[0-9\-]+$/'],
+            'title' => ['required', 'string', 'max:255', 'regex:/^[\p{L}0-9][\p{L}0-9\s\:\,\.\'\-\(\)\&\!\?\/]*$/u'],
+            'author' => ['required', 'string', 'max:255', 'regex:/^[\p{L}][\p{L}\s\.\'\-\,]*[\p{L}\.\'\-]$/u'],
+            'publisher' => ['nullable', 'string', 'max:255', 'regex:/^[\p{L}0-9][\p{L}0-9\s\.\'\-\,\&]*$/u'],
             'publication_year' => 'nullable|integer|min:1000|max:' . (date('Y') + 1),
             'category_id' => 'required|exists:categories,id',
             'stock' => 'required|integer|min:0',
-            'description' => 'nullable|string',
+            'description' => 'nullable|string|max:2000',
             'coverUpload' => 'nullable|image|max:3072',
+        ];
+    }
+
+    protected function messages(): array
+    {
+        return [
+            'isbn.regex' => 'ISBN hanya boleh berisi angka dan tanda hubung.',
+            'title.regex' => 'Judul mengandung karakter yang tidak diizinkan.',
+            'author.regex' => 'Nama penulis hanya boleh berisi huruf, spasi, titik, tanda kutip, tanda hubung, dan koma.',
+            'publisher.regex' => 'Nama penerbit hanya boleh berisi huruf, angka, spasi, dan tanda baca dasar.',
         ];
     }
 
